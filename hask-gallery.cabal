@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c2165a393f4d5a79b4c65b9dc2556f5e4cbbc88a7221014181ea523623ffb8cf
+-- hash: caa0984d5019cfe6705aeaa22baba248d42039a20609bde3c98c9193c2c6d776
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -27,14 +27,22 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Gallery
   other-modules:
       Paths_hask_gallery
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      aeson >=1.4.7.1 && <1.5
+    , base >=4.7 && <5
+    , blaze-html >=0.9.1.2 && <0.10
+    , blaze-markup >=0.8.2.4 && <0.9
+    , directory >=1.3.6.0 && <1.4
     , servant >=0.16.2 && <0.17.0
+    , servant-server >=0.16.2 && <0.18
+    , text >=1.2.4.0 && <1.3
+    , wai >=3.2.2.1 && <3.3
+    , warp >=3.3.10 && <3.4
   default-language: Haskell2010
 
 executable hask-gallery-exe
@@ -45,9 +53,17 @@ executable hask-gallery-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson >=1.4.7.1 && <1.5
+    , base >=4.7 && <5
+    , blaze-html >=0.9.1.2 && <0.10
+    , blaze-markup >=0.8.2.4 && <0.9
+    , directory >=1.3.6.0 && <1.4
     , hask-gallery
     , servant >=0.16.2 && <0.17.0
+    , servant-server >=0.16.2 && <0.18
+    , text >=1.2.4.0 && <1.3
+    , wai >=3.2.2.1 && <3.3
+    , warp >=3.3.10 && <3.4
   default-language: Haskell2010
 
 test-suite hask-gallery-test
@@ -59,8 +75,16 @@ test-suite hask-gallery-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson >=1.4.7.1 && <1.5
+    , base >=4.7 && <5
+    , blaze-html >=0.9.1.2 && <0.10
+    , blaze-markup >=0.8.2.4 && <0.9
+    , directory >=1.3.6.0 && <1.4
     , hask-gallery
     , servant >=0.16.2 && <0.17.0
+    , servant-server >=0.16.2 && <0.18
     , tasty >=1.2.3 && <1.3.0
+    , text >=1.2.4.0 && <1.3
+    , wai >=3.2.2.1 && <3.3
+    , warp >=3.3.10 && <3.4
   default-language: Haskell2010
