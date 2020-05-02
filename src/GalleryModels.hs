@@ -33,7 +33,7 @@ import Text.Show (Show)
 
 data ConfigurationModel = ConfigurationModel {
         title ::String,
-        gallery_path ::String
+        video_gallery_path ::String
     } deriving (Show, Generic)
 instance FromJSON ConfigurationModel
 instance ToJSON ConfigurationModel

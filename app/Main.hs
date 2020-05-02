@@ -19,7 +19,6 @@ import Prelude (otherwise, return, (==), (||), ($))
 import Servant
 import Servant.API
 import System.Console.ParseArgs
-import System.IO (IO)
 import System.IO (IO, putStrLn)
 import Text.Show (Show, show)
 
