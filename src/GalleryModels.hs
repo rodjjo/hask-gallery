@@ -83,7 +83,7 @@ getConfiguration :: IO ConfigurationModel
 getConfiguration = do
     contents <- readContents configurationFile
     case (decode (Char8.pack contents) :: Maybe ConfigurationModel) of
-        Just c -> return (c ::ConfigurationModel)
+        Just c -> return c
         Nothing -> return (ConfigurationModel "Hask Gallery" "")
 
 
@@ -99,5 +99,5 @@ loadGallery :: IO VideoModelList
 loadGallery = do
     contents <- readContents videoGalleryFile
     case (decode (Char8.pack contents) :: Maybe VideoModelList) of
-        Just c -> return (c ::VideoModelList)
+        Just c -> return c
         Nothing -> return []
