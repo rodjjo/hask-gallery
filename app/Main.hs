@@ -66,7 +66,7 @@ setSetting :: String -> String -> IO ()
 setSetting option text = do
     settings <- getConfiguration
     case () of
-        ()  | option == "set-title" -> setConfiguration $ ConfigurationModel text $ configurationPath settings
+        ()  | option == "set-title" -> setConfiguration $ ConfigurationModel text $ configurationGalleryPath settings
             | option == "set-path" -> setConfiguration $ ConfigurationModel (configurationTitle settings) text
 
 defaultPort :: Int

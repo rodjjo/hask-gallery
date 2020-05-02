@@ -9,8 +9,9 @@ module GalleryModels (
         refreshGallery,
         loadGallery,
         configurationTitle,
-        configurationPath,
-        ConfigurationModel(..)
+        configurationGalleryPath,
+        ConfigurationModel(..),
+        VideoModel(..)
     ) where
 
 import Control.Exception.Base (try)
@@ -32,17 +33,31 @@ import Text.Show (Show)
 
 data ConfigurationModel = ConfigurationModel {
         title ::String,
-        path ::String
+        gallery_path ::String
     } deriving (Show, Generic)
 instance FromJSON ConfigurationModel
 instance ToJSON ConfigurationModel
 
+data VideoModel = VideoModel {
+        video_path ::String,
+        modified ::Int,
+        size ::Int,
+        duration ::Int,
+        width ::Int,
+        height ::Int
+    } deriving (Show, Generic)
+instance FromJSON VideoModel
+instance ToJSON VideoModel
+
+type VideoModelList = [VideoModel]
+
 configurationTitle :: ConfigurationModel -> String
 configurationTitle (ConfigurationModel title _) = title
-configurationPath :: ConfigurationModel -> String
-configurationPath (ConfigurationModel _ path) = path
+configurationGalleryPath :: ConfigurationModel -> String
+configurationGalleryPath (ConfigurationModel _ path) = path
 
 configurationFile = "gallery-settings.json"
+videoGalleryFile = "gallery-videos.json"
 
 baseDir :: IO String
 baseDir = do
@@ -74,11 +89,15 @@ getConfiguration = do
 
 setConfiguration :: ConfigurationModel -> IO ()
 setConfiguration config = do
-    writeContents configurationFile (Char8.unpack (encode config))
+    writeContents configurationFile $ Char8.unpack $ encode config
 
 
 refreshGallery :: IO ()
 refreshGallery = putStrLn("Not Implemented yet")
 
-loadGallery :: IO ()
-loadGallery = putStrLn("Not Implemented yet")
+loadGallery :: IO VideoModelList
+loadGallery = do
+    contents <- readContents videoGalleryFile
+    case (decode (Char8.pack contents) :: Maybe VideoModelList) of
+        Just c -> return (c ::VideoModelList)
+        Nothing -> return []
