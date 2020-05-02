@@ -2,15 +2,19 @@
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Gallery where
 
-import           Data.Aeson
-import           Data.Proxy
-import           Data.Text  (Text)
-import qualified Data.Text  as T
-import           GHC.Generics
-import           Servant.API
+import Data.Aeson
+import Data.Int (Int)
+import Data.Proxy
+import Data.Text  (Text)
+import Data.Eq (Eq)
+import GHC.Generics (Generic)
+import Servant.API
+import Text.Read (Read)
+import Text.Show (Show)
 
 data User = User
     { name :: Text
