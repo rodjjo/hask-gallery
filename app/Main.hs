@@ -5,7 +5,8 @@
 module Main where
 
 import Gallery
-import GalleryModels
+import qualified VideoModel as VM
+import qualified SettingsModel as SM
 
 import Data.Eq (Eq)
 import Data.Int (Int)
@@ -22,6 +23,7 @@ import System.Console.ParseArgs
 import System.IO (IO, putStrLn)
 import Text.Show (Show, show)
 
+---------------------------------------------------------------------------------------------------
 data Options =
     OptionCommand |
     OptionPort |
@@ -47,44 +49,50 @@ argd = [
             argDesc = "Text parameter for set-title or set-path command"}
     ]
 
+---------------------------------------------------------------------------------------------------
 server :: Server Gallery
 server = hello :<|> user
     where
         hello = return "Hello world"
         user n a = return $ User n a
 
+---------------------------------------------------------------------------------------------------
 app :: Application
 app = serve gallery server
 
+---------------------------------------------------------------------------------------------------
 runserver :: Int -> IO ()
 runserver port = do
     putStrLn("Running server at port " ++ (show port) ++ "\nPress CTRL-C to terminate")
     run port app
 
+---------------------------------------------------------------------------------------------------
 setSetting :: String -> String -> IO ()
 setSetting option text = do
-    settings <- getConfiguration
+    settings <- SM.load
     case () of
-        ()  | option == "set-title" -> setConfiguration $ ConfigurationModel text $ configurationGalleryPath settings
-            | option == "set-path" -> setConfiguration $ ConfigurationModel (configurationTitle settings) text
+        ()  | option == "set-title" -> SM.save $ SM.Settings text $ SM.getVideoGalleryPath settings
+            | option == "set-path" -> SM.save $ SM.Settings (SM.getTitle settings) text
 
+---------------------------------------------------------------------------------------------------
 defaultPort :: Int
 defaultPort = 8080
 
+---------------------------------------------------------------------------------------------------
 main :: IO ()
 main = do
     args <- parseArgsIO (ArgsParseControl ArgsComplete ArgsSoftDash) argd
     let command = case (getArgString args OptionCommand) of
-                Just s -> (s ::String)
-                Nothing -> ("" ::String)
+                    Just s -> (s ::String)
+                    Nothing -> ("" ::String)
     let text = case (getArgString args OptionText) of
-                Just s -> (s ::String)
-                Nothing -> ("" ::String)
+                    Just s -> (s ::String)
+                    Nothing -> ("" ::String)
     let port = case (getArgInt args OptionPort) of
-                Just d -> (d ::Int)
-                Nothing -> defaultPort
+                    Just d -> (d ::Int)
+                    Nothing -> defaultPort
     case () of
         ()  | command == ("runserver" ::String) -> runserver port
-            | command == ("refresh" ::String) -> refreshGallery
+            | command == ("refresh" ::String) -> VM.updateCache
             | command == ("set-title" ::String) || command == ("set-path" ::String) -> setSetting command text
             | otherwise -> putStrLn("Unknow command " ++ command ++ "\n" ++ argsUsage args)

@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeOperators     #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-import GalleryModels
+import qualified SettingsModel as SM
 
 import Test.Tasty
 import qualified Test.Tasty.SmallCheck as SC
@@ -23,13 +23,13 @@ tests = testGroup "Tests" [configurationTests]
 
 configurationTests = testGroup "Configuration"
   [ testCase "Configuration getter functions" $ do
-        let settings = ConfigurationModel "The title" "/path/to/gallery"
-        "The title" @?= configurationTitle settings
-        "/path/to/gallery" @?= configurationGalleryPath settings
+        let settings = SM.Settings "The title" "/path/to/gallery"
+        "The title" @?= SM.getTitle settings
+        "/path/to/gallery" @?= SM.getVideoGalleryPath settings
   , testCase "Configuration load and save" $ do
-        let settings = ConfigurationModel "title" "/path"
-        setConfiguration settings
-        settings2 <- getConfiguration
-        "title" @?= configurationTitle settings2
-        "/path" @?= configurationGalleryPath settings2
+        let settings = SM.Settings "title" "/path"
+        SM.save settings
+        settings2 <- SM.load
+        "title" @?= SM.getTitle settings2
+        "/path" @?= SM.getVideoGalleryPath settings2
   ]

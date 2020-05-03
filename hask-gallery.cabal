@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5e1cf9077b1acfc14e1dad3972d48a4493a60021ca3455e3bc26db170a86ba77
+-- hash: 1e3460c0bde7e5f2f87eed6641e75032a2c956059bf4b328a0c115d806b37ca0
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -28,7 +28,9 @@ source-repository head
 library
   exposed-modules:
       Gallery
-      GalleryModels
+      SettingsModel
+      Utils
+      VideoModel
   other-modules:
       Paths_hask_gallery
   hs-source-dirs:
@@ -43,6 +45,7 @@ library
     , executable-path >=0.0.3.1 && <0.0.4
     , filepath >=1.4.2.1 && <1.5
     , parseargs >=0.2.0.9 && <0.3
+    , regex >=1.1.0.0 && <1.2
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , text >=1.2.4.0 && <1.3
@@ -69,6 +72,7 @@ executable hask-gallery-exe
     , filepath >=1.4.2.1 && <1.5
     , hask-gallery
     , parseargs >=0.2.0.9 && <0.3
+    , regex >=1.1.0.0 && <1.2
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , text >=1.2.4.0 && <1.3
@@ -96,6 +100,7 @@ test-suite hask-gallery-test
     , filepath >=1.4.2.1 && <1.5
     , hask-gallery
     , parseargs >=0.2.0.9 && <0.3
+    , regex >=1.1.0.0 && <1.2
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , tasty >=1.2.3 && <1.3.0

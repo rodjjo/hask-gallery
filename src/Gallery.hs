@@ -16,6 +16,7 @@ import Servant.API
 import Text.Read (Read)
 import Text.Show (Show)
 
+---------------------------------------------------------------------------------------------------
 data User = User
     { name :: Text
     , age  :: Int
@@ -23,6 +24,7 @@ data User = User
 instance FromJSON User
 instance ToJSON User
 
+---------------------------------------------------------------------------------------------------
 type Gallery  = Get '[PlainText] Text
             :<|> "user" :> Capture "name" Text :> Capture "age" Int :> Get '[JSON] User
 
