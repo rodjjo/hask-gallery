@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module VideoModel (
+module Models.Video (
          updateCache
         ,loadList
         ,Video(..)

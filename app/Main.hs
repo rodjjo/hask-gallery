@@ -5,8 +5,8 @@
 module Main where
 
 import Gallery
-import qualified VideoModel as VM
-import qualified SettingsModel as SM
+import qualified Models.Video as VM
+import qualified Models.Settings as SM
 
 import Data.Eq (Eq)
 import Data.Int (Int)

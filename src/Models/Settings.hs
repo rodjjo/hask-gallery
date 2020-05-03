@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module SettingsModel (
+module Models.Settings (
          new
         ,save
         ,load

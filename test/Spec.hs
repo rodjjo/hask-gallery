@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeOperators     #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-import qualified SettingsModel as SM
+import qualified Models.Settings as SM
 
 import Test.Tasty
 import qualified Test.Tasty.SmallCheck as SC

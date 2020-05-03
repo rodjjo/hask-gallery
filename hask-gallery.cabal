@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1e3460c0bde7e5f2f87eed6641e75032a2c956059bf4b328a0c115d806b37ca0
+-- hash: 2aed4ae1890705fd46fe25216969d57f9ee387d60ecf8457b4b2fdfc531e40db
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -28,9 +28,9 @@ source-repository head
 library
   exposed-modules:
       Gallery
-      SettingsModel
+      Models.Settings
+      Models.Video
       Utils
-      VideoModel
   other-modules:
       Paths_hask_gallery
   hs-source-dirs:
