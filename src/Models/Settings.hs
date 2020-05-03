@@ -57,12 +57,12 @@ getVideoGalleryPath :: Settings -> String
 getVideoGalleryPath (Settings _ path) = path
 
 ----------------------------------------------------------------------------------------------------
-configurationFile = "gallery-settings.json"
+filename = "gallery-settings.json"
 
 ---------------------------------------------------------------------------------------------------
 load :: IO Settings
-load = loadModel configurationFile new
+load = loadModel filename new
 
 ---------------------------------------------------------------------------------------------------
 save :: Settings -> IO ()
-save config = saveModel configurationFile config
+save config = saveModel filename config
