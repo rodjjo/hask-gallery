@@ -13,7 +13,7 @@ module Models.Settings (
         ,getVideoGalleryPath
     ) where
 
-import Utils (
+import Models.Base (
          loadModel
         ,saveModel
         ,saveModelList

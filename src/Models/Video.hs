@@ -9,7 +9,7 @@ module Models.Video (
         ,Video(..)
     ) where
 
-import Utils (
+import Models.Base (
          loadModel
         ,saveModel
         ,saveModelList
