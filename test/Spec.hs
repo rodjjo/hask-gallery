@@ -16,20 +16,23 @@ import Data.Ord
 import Prelude (($))
 import System.IO (IO, putStrLn)
 
+---------------------------------------------------------------------------------------------------
 main = defaultMain tests
 
+---------------------------------------------------------------------------------------------------
 tests :: TestTree
 tests = testGroup "Tests" [configurationTests]
 
+---------------------------------------------------------------------------------------------------
 configurationTests = testGroup "Configuration"
   [ testCase "Configuration getter functions" $ do
-        let settings = SM.Settings "The title" "/path/to/gallery"
-        "The title" @?= SM.getTitle settings
-        "/path/to/gallery" @?= SM.getVideoGalleryPath settings
+        let settings = SM.new
+        "Hask Gallery" @?= SM.getTitle settings
+        "" @?= SM.getVideoGalleryPath settings
   , testCase "Configuration load and save" $ do
-        let settings = SM.Settings "title" "/path"
+        let settings = SM.setVideoGalleryPath (SM.setTitle SM.new "ChangedTitle") "ChangedPath"
         SM.save settings
         settings2 <- SM.load
-        "title" @?= SM.getTitle settings2
-        "/path" @?= SM.getVideoGalleryPath settings2
+        "ChangedTitle" @?= SM.getTitle settings2
+        "ChangedPath" @?= SM.getVideoGalleryPath settings2
   ]

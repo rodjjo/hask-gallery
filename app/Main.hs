@@ -71,8 +71,8 @@ setSetting :: String -> String -> IO ()
 setSetting option text = do
     settings <- SM.load
     case () of
-        ()  | option == "set-title" -> SM.save $ SM.Settings text $ SM.getVideoGalleryPath settings
-            | option == "set-path" -> SM.save $ SM.Settings (SM.getTitle settings) text
+        ()  | option == "set-title" -> SM.save $ SM.setTitle settings text
+            | option == "set-path" -> SM.save $ SM.setVideoGalleryPath settings text
 
 ---------------------------------------------------------------------------------------------------
 defaultPort :: Int

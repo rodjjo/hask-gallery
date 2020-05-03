@@ -4,11 +4,13 @@
 {-# LANGUAGE TypeOperators #-}
 
 module SettingsModel (
-        save,
-        load,
-        getTitle,
-        getVideoGalleryPath,
-        Settings(..),
+         new
+        ,save
+        ,load
+        ,setTitle
+        ,getTitle
+        ,setVideoGalleryPath
+        ,getVideoGalleryPath
     ) where
 
 import Utils (
@@ -35,15 +37,31 @@ instance FromJSON Settings
 instance ToJSON Settings
 
 ----------------------------------------------------------------------------------------------------
+new :: Settings
+new = Settings { title="Hask Gallery",  video_gallery_path="" }
+
+----------------------------------------------------------------------------------------------------
+setTitle :: Settings -> String -> Settings
+setTitle settings value = Settings { title=value, video_gallery_path=getVideoGalleryPath settings }
+
+----------------------------------------------------------------------------------------------------
 getTitle :: Settings -> String
 getTitle (Settings title _) = title
+
+----------------------------------------------------------------------------------------------------
+setVideoGalleryPath :: Settings -> String -> Settings
+setVideoGalleryPath settings value = Settings { title=getTitle settings, video_gallery_path=value }
+
+----------------------------------------------------------------------------------------------------
 getVideoGalleryPath :: Settings -> String
 getVideoGalleryPath (Settings _ path) = path
+
+----------------------------------------------------------------------------------------------------
 configurationFile = "gallery-settings.json"
 
 ---------------------------------------------------------------------------------------------------
 load :: IO Settings
-load = loadModel configurationFile (Settings "Hask Gallery" "")
+load = loadModel configurationFile new
 
 ---------------------------------------------------------------------------------------------------
 save :: Settings -> IO ()
