@@ -11,6 +11,7 @@ module Models.Settings (
         ,getTitle
         ,setVideoGalleryPath
         ,getVideoGalleryPath
+        ,optionSetter
     ) where
 
 import Models.Base (
@@ -24,7 +25,7 @@ import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import Data.Int (Int)
 import Data.String (String)
 import GHC.Generics (Generic)
-import Prelude (return, ($))
+import Prelude (return, ($), (==), otherwise)
 import System.IO (IO)
 import Text.Show (Show)
 
@@ -39,6 +40,14 @@ instance ToJSON Settings
 ----------------------------------------------------------------------------------------------------
 new :: Settings
 new = Settings { title="Hask Gallery",  video_gallery_path="" }
+
+
+----------------------------------------------------------------------------------------------------
+optionSetter :: String -> (Settings -> String -> Settings)
+optionSetter name
+    | (name == "title") = setTitle
+    | (name == "videos-path") = setVideoGalleryPath
+    | otherwise = (\settings text -> settings)
 
 ----------------------------------------------------------------------------------------------------
 setTitle :: Settings -> String -> Settings
