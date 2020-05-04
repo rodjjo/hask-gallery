@@ -1,0 +1,4 @@
+* text=auto
+*.hs text
+*.png binary
+*.jpg binary
