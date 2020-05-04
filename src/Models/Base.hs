@@ -26,6 +26,7 @@ import Data.String (String)
 import System.IO (IO)
 import Prelude (return, ($))
 
+-- TODO(rodrigo): make loadModel to able to load single element or list
 ---------------------------------------------------------------------------------------------------
 loadModel :: (FromJSON a) => String -> a -> IO a
 loadModel filename def = do
