@@ -5,11 +5,9 @@
 module Probe.FFProbe (
          probeInstalled
         ,probeFile
-        --,getDimensions
-        --,getDuration
-        --,getMediaType
-        --,getModifiedAt
-        --,getCreatedAt
+        ,getDimensions
+        ,getDuration
+        ,getMediaType
         ,Mediatype(..)
     ) where
 
@@ -45,6 +43,18 @@ data MediaInfo = MediaInfo {
         ,duration ::String
         ,dimensions :: (Int,Int)
     } deriving (Show, Eq)
+
+--------------------------------------------------------------------------------------------------
+getDimensions :: MediaInfo -> (Int, Int)
+getDimensions (MediaInfo _  _ dim) = dim
+
+--------------------------------------------------------------------------------------------------
+getDuration :: MediaInfo -> String
+getDuration (MediaInfo _  dur _) = dur
+
+--------------------------------------------------------------------------------------------------
+getMediaType :: MediaInfo -> Mediatype
+getMediaType (MediaInfo mtype  _ _) = mtype
 
 --------------------------------------------------------------------------------------------------
 ffprobeExec :: String -> IO (Maybe String)
