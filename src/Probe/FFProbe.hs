@@ -27,6 +27,7 @@ import System.Exit ( ExitCode(..) )
 import System.FilePath (FilePath)
 import System.IO (IO, putStrLn)
 import System.Process ( readProcessWithExitCode )
+import Text.Show (Show)
 import qualified Text.Regex.TDFA as RE
 
 --------------------------------------------------------------------------------------------------
@@ -34,15 +35,16 @@ ffprobe :: String
 ffprobe = "ffprobe"
 
 --------------------------------------------------------------------------------------------------
-data Mediatype = MediaAudio|MediaVideo|MediaUnknow deriving Eq
+data Mediatype = MediaAudio
+                |MediaVideo
+                |MediaUnknow
+                deriving (Show, Eq)
 
 data MediaInfo = MediaInfo {
          mediaType ::Mediatype
         ,duration ::String
-        ,modifiedAt ::Int
-        ,createdAt ::Int
         ,dimensions :: (Int,Int)
-    }
+    } deriving (Show, Eq)
 
 --------------------------------------------------------------------------------------------------
 ffprobeExec :: String -> IO (Maybe String)
@@ -85,12 +87,12 @@ parseMediaType :: Mediatype -> String -> Mediatype
 parseMediaType mediaType text = mediaType
 
 --------------------------------------------------------------------------------------------------
-type ParseData = (Mediatype, String, (Int, Int))
-emptyParseData :: ParseData
-emptyParseData = (MediaUnknow, "", (0, 0))
+type ParserData = (Mediatype, String, (Int, Int))
+emptyParserData :: ParserData
+emptyParserData = (MediaUnknow, "", (0, 0))
 
 --------------------------------------------------------------------------------------------------
-parseNext :: ParseData  -> String -> ParseData
+parseNext :: ParserData  -> String -> ParserData
 parseNext (mType, duration, (width, height)) text = (
          if mType /= MediaVideo
             then parseMediaType mType text
@@ -104,16 +106,14 @@ parseNext (mType, duration, (width, height)) text = (
     )
 
 --------------------------------------------------------------------------------------------------
-parseAll :: [String] -> (Mediatype, String, (Int, Int))
-parseAll contents = foldl (\last line -> parseNext last line) emptyParseData $ contents
+parseAll :: [String] -> ParserData
+parseAll contents = foldl (\last line -> parseNext last line) emptyParserData $ contents
 
 --------------------------------------------------------------------------------------------------
-parseInfo :: Int -> Int -> [String] -> MediaInfo
-parseInfo mCreatedAt mModifiedAt contents = MediaInfo {
+parseInfo :: [String] -> MediaInfo
+parseInfo contents = MediaInfo {
          mediaType=mType
         ,duration=mDuration
-        ,modifiedAt=mModifiedAt
-        ,createdAt=mCreatedAt
         ,dimensions=mDimensions
     } where
         (mType, mDuration, mDimensions) = parseAll contents
@@ -125,21 +125,9 @@ probeInstalled = do
     return $ exitCode == ExitSuccess
 
 --------------------------------------------------------------------------------------------------
-getModificationTime :: FilePath -> IO Int
-getModificationTime filepath = do
-    return 0
-
---------------------------------------------------------------------------------------------------
-getCreationTime :: FilePath -> IO Int
-getCreationTime filepath = do
-    return 0
-
---------------------------------------------------------------------------------------------------
 probeFile :: FilePath -> IO (Maybe MediaInfo)
 probeFile filepath = do
     probedData <- ffprobeExec filepath
-    mCreatedAt <- getCreationTime filepath
-    mModifiedAt <- getModificationTime filepath
     case probedData of
-        Just info -> return $ Just $ parseInfo mCreatedAt mModifiedAt $ endBy "\n" info
+        Just info -> return $ Just $ parseInfo $ endBy "\n" info
         Nothing -> return Nothing
