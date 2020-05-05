@@ -15,18 +15,19 @@ module Probe.FFProbe (
 
 import Data.Eq (Eq)
 import Data.List.NonEmpty (NonEmpty)
-import Data.List (foldl)
-import Data.List.Split (endBy)
+import Data.List (head, foldl)
+import Data.List.Split (endBy, splitOn)
 import Data.Int (Int)
 import Data.Maybe
 import Data.String (String)
 import Data.Bool (Bool)
+import Prelude (last, null, otherwise, read, return, (==), (||), ($), (/=))
 import System.Directory ( getHomeDirectory )
 import System.Exit ( ExitCode(..) )
 import System.FilePath (FilePath)
 import System.IO (IO, putStrLn)
 import System.Process ( readProcessWithExitCode )
-import Prelude (otherwise, return, (==), (||), ($), (/=))
+import qualified Text.Regex.TDFA as RE
 
 --------------------------------------------------------------------------------------------------
 ffprobe :: String
@@ -37,7 +38,7 @@ data Mediatype = MediaAudio|MediaVideo|MediaUnknow deriving Eq
 
 data MediaInfo = MediaInfo {
          mediaType ::Mediatype
-        ,duration ::Int
+        ,duration ::String
         ,modifiedAt ::Int
         ,createdAt ::Int
         ,dimensions :: (Int,Int)
@@ -52,37 +53,49 @@ ffprobeExec filepath = do
         else return $ Just stdOut
 
 --------------------------------------------------------------------------------------------------
-dimensionsRegex :: String
-dimensionsRegex = "([0-9]{3,5}x[0-9]{3,5})"
+regexCapture :: String -> String -> String
+regexCapture regex text =
+    if captured /= []
+        then head captured
+        else ""
+    where
+       (_, _, _, captured) = text RE.=~ regex :: (String, String, String, [String])
 
 --------------------------------------------------------------------------------------------------
-durationRegex :: String
-durationRegex = "Duration:[ ]+([0-9]{2}:[0-9]{2}:[0-9]{2})"
+dimensionsRegex = regexCapture "([0-9]{3,5}x[0-9]{3,5})"
 
 --------------------------------------------------------------------------------------------------
-parseDuration :: String -> Int
-parseDuration text = 0
+durationRegex = regexCapture "Duration:[ ]+([0-9]{2}:[0-9]{2}:[0-9]{2})"
+
+--------------------------------------------------------------------------------------------------
+parseDuration :: String -> String
+parseDuration text = durationRegex text
 
 --------------------------------------------------------------------------------------------------
 parseDimensions :: Int -> Int -> String -> (Int, Int)
-parseDimensions width height text = (0, 0)
+parseDimensions width height text =
+    if null dims
+        then ( width, height )
+        else ( head dims, last dims )
+    where
+        dims = [ read x ::Int | x <- splitOn "x" $ dimensionsRegex text ]
 
 --------------------------------------------------------------------------------------------------
-parseMediaType :: String -> Mediatype
-parseMediaType text = MediaUnknow
+parseMediaType :: Mediatype -> String -> Mediatype
+parseMediaType mediaType text = mediaType
 
 --------------------------------------------------------------------------------------------------
-type ParseData = (Mediatype, Int, (Int, Int))
+type ParseData = (Mediatype, String, (Int, Int))
 emptyParseData :: ParseData
-emptyParseData = (MediaUnknow, 0, (0, 0))
+emptyParseData = (MediaUnknow, "", (0, 0))
 
 --------------------------------------------------------------------------------------------------
 parseNext :: ParseData  -> String -> ParseData
 parseNext (mType, duration, (width, height)) text = (
-         if mType == MediaUnknow
-            then parseMediaType text
+         if mType /= MediaVideo
+            then parseMediaType mType text
             else mType
-        ,if duration == 0
+        ,if duration == ""
             then parseDuration text
             else duration
         ,if (width == 0) || (height == 0)
@@ -91,7 +104,7 @@ parseNext (mType, duration, (width, height)) text = (
     )
 
 --------------------------------------------------------------------------------------------------
-parseAll :: [String] -> (Mediatype, Int, (Int, Int))
+parseAll :: [String] -> (Mediatype, String, (Int, Int))
 parseAll contents = foldl (\last line -> parseNext last line) emptyParseData $ contents
 
 --------------------------------------------------------------------------------------------------
@@ -108,7 +121,7 @@ parseInfo mCreatedAt mModifiedAt contents = MediaInfo {
 --------------------------------------------------------------------------------------------------
 probeInstalled :: IO Bool
 probeInstalled = do
-    (exitCode, stdOut, stdErr) <- readProcessWithExitCode (ffprobe) ["--version"] ""
+    (exitCode, stdOut, stdErr) <- readProcessWithExitCode (ffprobe) ["-version"] ""
     return $ exitCode == ExitSuccess
 
 --------------------------------------------------------------------------------------------------
