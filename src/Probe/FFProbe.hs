@@ -15,7 +15,7 @@ module Probe.FFProbe (
 
 import Data.Eq (Eq)
 import Data.List.NonEmpty (NonEmpty)
-import Data.List (head, foldl)
+import Data.List (head, foldl, (++))
 import Data.List.Split (endBy, splitOn)
 import Data.Int (Int)
 import Data.Maybe
@@ -52,7 +52,7 @@ ffprobeExec filepath = do
     (exitCode, stdOut, stdErr) <- readProcessWithExitCode (ffprobe) ["-i", filepath] ""
     if exitCode /= ExitSuccess
         then return Nothing
-        else return $ Just stdOut
+        else return $ Just (stdOut ++ "\n" ++ stdErr)
 
 --------------------------------------------------------------------------------------------------
 regexCapture :: String -> String -> String
@@ -80,11 +80,23 @@ parseDimensions width height text =
         then ( width, height )
         else ( head dims, last dims )
     where
-        dims = [ read x ::Int | x <- splitOn "x" $ dimensionsRegex text ]
+        dims = [ read x ::Int | x <- splitOn "x" $ dimensionsRegex text, x /= ""]
+
+--------------------------------------------------------------------------------------------------
+hasVideo :: String -> Bool
+hasVideo text = text RE.=~ ("Video: " ::String)
+
+--------------------------------------------------------------------------------------------------
+hasAudio :: String -> Bool
+hasAudio text = text RE.=~ ("Audio: " ::String)
 
 --------------------------------------------------------------------------------------------------
 parseMediaType :: Mediatype -> String -> Mediatype
-parseMediaType mediaType text = mediaType
+parseMediaType previous text
+        | previous == MediaVideo = previous
+        | hasVideo text = MediaVideo
+        | hasAudio text = MediaAudio
+        | otherwise = previous
 
 --------------------------------------------------------------------------------------------------
 type ParserData = (Mediatype, String, (Int, Int))
