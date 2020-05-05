@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b495392a6314d897b3a2f8099ba567d47d010fb1b50033abc63825891bbc48b
+-- hash: 0389de5afb2c0d0c7d2eb9ef32784022245941552ac2f5918e667ac7a9d1bb38
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       Models.Base
       Models.Settings
       Models.Video
+      Probe.FFProbe
       Utils
   other-modules:
       Paths_hask_gallery
@@ -47,9 +48,11 @@ library
     , executable-path >=0.0.3.1 && <0.0.4
     , filepath >=1.4.2.1 && <1.5
     , parseargs >=0.2.0.9 && <0.3
-    , regex >=1.1.0.0 && <1.2
+    , process >=1.6.8.0 && <1.6.9
+    , regex-tdfa >=1.3.0 && <1.4
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
+    , split >=0.2.3.4 && <0.2.4
     , text >=1.2.4.0 && <1.3
     , utf8-string >=1.0.1.1 && <2.0
     , wai >=3.2.2.1 && <3.3
@@ -74,9 +77,11 @@ executable hask-gallery-exe
     , filepath >=1.4.2.1 && <1.5
     , hask-gallery
     , parseargs >=0.2.0.9 && <0.3
-    , regex >=1.1.0.0 && <1.2
+    , process >=1.6.8.0 && <1.6.9
+    , regex-tdfa >=1.3.0 && <1.4
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
+    , split >=0.2.3.4 && <0.2.4
     , text >=1.2.4.0 && <1.3
     , utf8-string >=1.0.1.1 && <2.0
     , wai >=3.2.2.1 && <3.3
@@ -102,9 +107,11 @@ test-suite hask-gallery-test
     , filepath >=1.4.2.1 && <1.5
     , hask-gallery
     , parseargs >=0.2.0.9 && <0.3
-    , regex >=1.1.0.0 && <1.2
+    , process >=1.6.8.0 && <1.6.9
+    , regex-tdfa >=1.3.0 && <1.4
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
+    , split >=0.2.3.4 && <0.2.4
     , tasty >=1.2.3 && <1.3.0
     , tasty-hunit >=0.10.0.0 && <0.11
     , tasty-quickcheck >=0.10.0.0 && <0.11
