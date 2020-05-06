@@ -2,10 +2,9 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Scan.ScanMedia where
-
-import qualified Models.Video as MV
-import qualified Models.Settings as MS
+module Scan.ScanMedia (
+        searchForVideos
+    ) where
 
 import Control.Monad (mapM, filterM)
 import Data.Bool (Bool(..))
@@ -30,7 +29,7 @@ anyOfExtension filter filepath = elem (takeExtension $ lowerPath filepath) filte
 mp4Filter = anyOfExtension [".mp4"] -- the most supported extension for browsers
 
 ---------------------------------------------------------------------------------------------------
-pictureFilter = anyOfExtension [".jpg", ".jpeg", ".png", ".webp", ".bpm"]
+pictureFilter = anyOfExtension [".jpg", ".jpeg", ".png", ".webp", ".bmp"]
 
 ---------------------------------------------------------------------------------------------------
 musicFilter = anyOfExtension [".mp3", ".ogg", ".wav"]
@@ -59,9 +58,3 @@ searchFilesFilter filter = allFilesInSubDirs filter
 
 ---------------------------------------------------------------------------------------------------
 searchForVideos = searchFilesFilter mp4Filter
-
----------------------------------------------------------------------------------------------------
-searchGalleryVideos :: IO [FilePath]
-searchGalleryVideos = do
-    settings <- MS.load
-    searchForVideos $ MS.getVideoGalleryPath settings

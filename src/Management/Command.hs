@@ -69,11 +69,12 @@ setSetting option text = do
 exec :: (Maybe Int -> IO ()) -> IO ()
 exec runServer = do
     args <- PA.parseArgsIO (PA.ArgsParseControl PA.ArgsComplete PA.ArgsSoftDash) argd
+    settings <- SM.load
     let command = fromJust $ PA.getArgString args OptionCommand <|> Just ""
     let text = fromJust $ PA.getArgString args OptionText <|> Just ""
     let port = PA.getArgInt args OptionPort
     case (adaptCommand command) of
         "runserver" -> runServer port
         "gal-config" -> setSetting command text
-        "refresh" -> VM.updateCache
+        "refresh" -> VM.updateCache (SM.getVideoGalleryPath settings)
         _ -> putStrLn ("An unknow command was entered: " ++ command ++ "\n" ++ (PA.argsUsage args))

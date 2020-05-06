@@ -20,6 +20,7 @@ import Servant.API
 import System.Console.ParseArgs
 import System.IO (IO, putStrLn)
 import Text.Show (show)
+import GHC.IO.Encoding (setLocaleEncoding, utf8)
 
 ---------------------------------------------------------------------------------------------------
 server :: Server Gallery
@@ -41,4 +42,6 @@ runServer port = do
 
 ---------------------------------------------------------------------------------------------------
 main :: IO ()
-main = MC.exec runServer
+main = do
+    setLocaleEncoding utf8
+    MC.exec runServer
