@@ -10,14 +10,19 @@ module Utils (
     ,baseFilePath
     ,readContents
     ,writeContents
+    ,getModifiedTime
     ) where
 
 import Data.String (String)
-import System.Directory (doesFileExist)
+import Data.Int (Int)
+import Prelude (return, properFraction, ($), (*), (/), floor, div)
+import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (combine, dropFileName, FilePath)
 import System.IO (IO, readFile, writeFile)
-import Prelude (return, ($))
+import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
+import Data.Time.LocalTime (utcToLocalTime)
+import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 
 ---------------------------------------------------------------------------------------------------
 baseDir :: IO String
@@ -45,3 +50,14 @@ writeContents :: String -> String -> IO ()
 writeContents filename contents = do
     filepath <- baseFilePath filename
     writeFile filepath contents
+
+---------------------------------------------------------------------------------------------------
+secsSinceEpoch :: UTCTime -> Int
+secsSinceEpoch time =
+    (floor $ (1e9 *) $ nominalDiffTimeToSeconds $ utcTimeToPOSIXSeconds time) `div` 1000000000
+
+---------------------------------------------------------------------------------------------------
+getModifiedTime :: FilePath -> IO Int
+getModifiedTime path = do
+    modified <- getModificationTime path
+    return $ secsSinceEpoch $ modified

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0389de5afb2c0d0c7d2eb9ef32784022245941552ac2f5918e667ac7a9d1bb38
+-- hash: dcc5f0b2970b4f3067bb97dfdc86ea35288b87bee0b0437fbaf64458aec9650a
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       Models.Settings
       Models.Video
       Probe.FFProbe
+      Scan.ScanMedia
       Utils
   other-modules:
       Paths_hask_gallery
@@ -54,6 +55,7 @@ library
     , servant-server >=0.16.2 && <0.18
     , split >=0.2.3.4 && <0.2.4
     , text >=1.2.4.0 && <1.3
+    , time >=1.8.0.0 && <1.10
     , utf8-string >=1.0.1.1 && <2.0
     , wai >=3.2.2.1 && <3.3
     , warp >=3.3.10 && <3.4
@@ -82,7 +84,9 @@ executable hask-gallery-exe
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , split >=0.2.3.4 && <0.2.4
+    , system-fileio >=0.1 && <1.0
     , text >=1.2.4.0 && <1.3
+    , time >=1.8.0.0 && <1.10
     , utf8-string >=1.0.1.1 && <2.0
     , wai >=3.2.2.1 && <3.3
     , warp >=3.3.10 && <3.4
@@ -112,11 +116,13 @@ test-suite hask-gallery-test
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , split >=0.2.3.4 && <0.2.4
+    , system-fileio >=0.1 && <1.0
     , tasty >=1.2.3 && <1.3.0
     , tasty-hunit >=0.10.0.0 && <0.11
     , tasty-quickcheck >=0.10.0.0 && <0.11
     , tasty-smallcheck >=0.8.0 && <0.9
     , text >=1.2.4.0 && <1.3
+    , time >=1.8.0.0 && <1.10
     , utf8-string >=1.0.1.1 && <2.0
     , wai >=3.2.2.1 && <3.3
     , warp >=3.3.10 && <3.4
