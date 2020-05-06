@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6778a83d3f3c56d531761371b7535870fd9f4c83dcda7f6828c7ab088799961d
+-- hash: dcc5f0b2970b4f3067bb97dfdc86ea35288b87bee0b0437fbaf64458aec9650a
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       Models.Settings
       Models.Video
       Probe.FFProbe
+      Scan.ScanMedia
       Utils
   other-modules:
       Paths_hask_gallery
@@ -83,6 +84,7 @@ executable hask-gallery-exe
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , split >=0.2.3.4 && <0.2.4
+    , system-fileio >=0.1 && <1.0
     , text >=1.2.4.0 && <1.3
     , time >=1.8.0.0 && <1.10
     , utf8-string >=1.0.1.1 && <2.0
@@ -114,6 +116,7 @@ test-suite hask-gallery-test
     , servant >=0.16.2 && <0.17.0
     , servant-server >=0.16.2 && <0.18
     , split >=0.2.3.4 && <0.2.4
+    , system-fileio >=0.1 && <1.0
     , tasty >=1.2.3 && <1.3.0
     , tasty-hunit >=0.10.0.0 && <0.11
     , tasty-quickcheck >=0.10.0.0 && <0.11
