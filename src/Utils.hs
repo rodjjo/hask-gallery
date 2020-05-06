@@ -6,16 +6,21 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Utils (
-     baseDir
-    ,baseFilePath
-    ,readContents
-    ,writeContents
-    ,getModifiedTime
+         baseDir
+        ,baseFilePath
+        ,readContents
+        ,writeContents
+        ,getModifiedTime
+        ,quicksort
+        ,quicksortM
     ) where
 
+import Control.Monad (Monad)
 import Data.String (String)
 import Data.Int (Int)
-import Prelude (return, properFraction, ($), (*), (/), floor, div)
+import Data.Ord (Ord)
+import Data.List (filter, (++))
+import Prelude (return, floor, div, ($), (*), (/), (<), (>=))
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (combine, dropFileName, FilePath)
@@ -44,6 +49,20 @@ readContents filename = do
     if fileexists
         then readFile filepath
         else return ("{}" ::String)
+
+---------------------------------------------------------------------------------------------------
+quicksort :: Ord a => [a] -> [a]
+quicksort []     = []
+quicksort (p:xs) = (quicksort lesser) ++ [p] ++ (quicksort greater)
+    where
+        lesser  = filter (< p) xs
+        greater = filter (>= p) xs
+
+---------------------------------------------------------------------------------------------------
+quicksortM :: (Ord t, Monad m) => m [t]  -> m [t]
+quicksortM mylist = do
+    list <- mylist
+    return $ quicksort list
 
 ---------------------------------------------------------------------------------------------------
 writeContents :: String -> String -> IO ()

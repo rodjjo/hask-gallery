@@ -8,6 +8,7 @@ module Probe.FFProbe (
         ,getDimensions
         ,getDuration
         ,getMediaType
+        ,MediaInfo
         ,Mediatype(..)
     ) where
 
