@@ -51,9 +51,7 @@ dirTree directorypath = do
 allFilesInSubDirs :: (FilePath -> Bool) -> FilePath -> IO [FilePath]
 allFilesInSubDirs filter directorypath = do
     allContents <- dirTree directorypath
-    let filteredContents = [path | path <- allContents, filter path]
-    allFiles <- filterM doesFileExist filteredContents
-    return allFiles
+    filterM doesFileExist [path | path <- allContents, filter path]
 
 ---------------------------------------------------------------------------------------------------
 searchFilesFilter :: (FilePath -> Bool) -> FilePath -> IO [FilePath]
