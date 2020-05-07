@@ -15,10 +15,13 @@ module Utils (
         ,getModifiedTime
         ,quicksort
         ,quicksortM
+        ,randomList
+        ,shuffleList
     ) where
 
 import Control.Monad (Monad)
 import Data.Bits (xor, shiftL, shiftR)
+import Data.Bool (Bool)
 import Data.Word (Word32)
 import Data.String (String)
 import Data.Int (Int)
@@ -68,6 +71,25 @@ quicksortM :: (Ord t, Monad m) => m [t]  -> m [t]
 quicksortM mylist = do
     list <- mylist
     return $ quicksort list
+
+---------------------------------------------------------------------------------------------------
+randomList :: [Int] -> [Int]
+randomList [] = []
+randomList (h:seeds) = h:seeds ++ (randomList [nextRandomNumber h])
+
+---------------------------------------------------------------------------------------------------
+filterPair :: (Int -> Int -> Bool) -> (Int, a) -> [(Int, a)] -> [(Int, a)]
+filterPair cmp (p, _) items = [
+        (pos, item) | (pos, item) <- items, cmp p pos
+    ]
+
+---------------------------------------------------------------------------------------------------
+shuffleList :: [(Int, a)] -> [(Int, a)]
+shuffleList [] = []
+shuffleList (p:xs) = (shuffleList lesser) ++ [p] ++ (shuffleList greater)
+    where
+        lesser  = filterPair (<) (p) (xs)
+        greater = filterPair (>=) (p) (xs)
 
 ---------------------------------------------------------------------------------------------------
 writeContents :: String -> String -> IO ()

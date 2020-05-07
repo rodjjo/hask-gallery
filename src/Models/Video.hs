@@ -75,7 +75,7 @@ loadList = loadModelList filename
 
 ---------------------------------------------------------------------------------------------------
 newVideo :: String -> Video
-newVideo path = Video { video_path=path }
+newVideo path = Video path 0 "" 0  0
 
 
 ---------------------------------------------------------------------------------------------------
@@ -120,20 +120,20 @@ addVideo iovideo iovideos = do
     return ([video] ++ videos)
 
 ---------------------------------------------------------------------------------------------------
-updatedModelList :: [FilePath] -> VideoList -> IO VideoList
-updatedModelList [] videolist = return []
-updatedModelList sortedpaths [] = mapM (videoInfo) sortedpaths
-updatedModelList (hp:sortedpaths) (hv:videos)
-    | hp < getVideoPath hv = updatedModelList (hp:sortedpaths) videos
-    | hp == getVideoPath hv = addVideo (refreshVideoInfo hv) $ updatedModelList sortedpaths videos
-    | otherwise = updatedModelList (hp:sortedpaths) ((newVideo hp) : hv : videos)
+updatedVideoList :: [FilePath] -> VideoList -> IO VideoList
+updatedVideoList [] videolist = return []
+updatedVideoList sortedpaths [] = mapM (videoInfo) sortedpaths
+updatedVideoList (hp:sortedpaths) (hv:videos)
+    | hp < getVideoPath hv = updatedVideoList (hp:sortedpaths) videos
+    | hp == getVideoPath hv = addVideo (refreshVideoInfo hv) $ updatedVideoList sortedpaths videos
+    | otherwise = updatedVideoList (hp:sortedpaths) ((newVideo hp) : hv : videos)
 
 ---------------------------------------------------------------------------------------------------
 updateCacheInternal :: String -> IO ()
 updateCacheInternal gallerpath = do
     currentlist <- loadList
     paths <- quicksortM $ searchForVideos gallerpath
-    models <- updatedModelList paths currentlist
+    models <- updatedVideoList paths currentlist
     saveModelList filename [ m | m <- models, (getVideoTime m) /= 0]
     putStrLn "The video gallery was updated."
 
