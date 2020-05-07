@@ -18,7 +18,6 @@ import Utils (
         ,baseFilePath
         ,readContents
         ,writeContents
-        ,nextRandomNumber
         ,shuffleList
         ,randomList
     )
