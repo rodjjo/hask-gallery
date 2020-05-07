@@ -10,24 +10,29 @@ module Utils (
         ,baseFilePath
         ,readContents
         ,writeContents
+        ,getRandomSeed
+        ,nextRandomNumber
         ,getModifiedTime
         ,quicksort
         ,quicksortM
     ) where
 
 import Control.Monad (Monad)
+import Data.Bits (xor, shiftL, shiftR)
+import Data.Word (Word32)
 import Data.String (String)
 import Data.Int (Int)
 import Data.Ord (Ord)
 import Data.List (filter, (++))
-import Prelude (return, floor, div, ($), (*), (/), (<), (>=))
+import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
+import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
+import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
+import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), (>=))
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (combine, dropFileName, FilePath)
 import System.IO (IO, readFile, writeFile)
-import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
-import Data.Time.LocalTime (utcToLocalTime)
-import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
+
 
 ---------------------------------------------------------------------------------------------------
 baseDir :: IO String
@@ -80,3 +85,31 @@ getModifiedTime :: FilePath -> IO Int
 getModifiedTime path = do
     modified <- getModificationTime path
     return $ secsSinceEpoch $ modified
+
+---------------------------------------------------------------------------------------------------
+getRandomSeed :: IO Int
+getRandomSeed = do
+    now <- getZonedTime
+    return $ nextRandomNumber $ secsSinceEpoch $ zonedTimeToUTC now
+
+---------------------------------------------------------------------------------------------------
+randomShl1 :: Word32 -> Word32
+randomShl1 seed = seed `xor` (seed `shiftL` 13)
+
+randomShr :: Word32 -> Word32
+randomShr seed   = seed `xor` (seed `shiftR` 17)
+
+randomShl2 :: Word32 -> Word32
+randomShl2 seed = seed `xor` (seed `shiftL` 5)
+
+randomShlShr :: Word32 -> Word32
+randomShlShr seed = randomShr (randomShl1 seed)
+
+toWord32 :: Int -> Word32
+toWord32 n = fromInteger $ toInteger n
+
+fromWord32 :: Word32 -> Int
+fromWord32 n = fromInteger $ toInteger n
+
+nextRandomNumber :: Int -> Int
+nextRandomNumber seed = fromWord32 $ randomShl2 $ randomShlShr $ toWord32 seed
