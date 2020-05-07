@@ -10,6 +10,7 @@ module Models.Base (
     ,loadModelList
     ,saveModel
     ,saveModelList
+    ,shuffleModelList
     ) where
 
 import Utils (
@@ -17,14 +18,19 @@ import Utils (
         ,baseFilePath
         ,readContents
         ,writeContents
+        ,shuffleList
+        ,randomList
     )
 
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import qualified Data.ByteString.Lazy.Char8 as Char8
+import Data.Int (Int)
+import Data.List (head, zip, (++))
 import Data.Maybe
+import Data.Ord (Ord)
 import Data.String (String)
 import System.IO (IO)
-import Prelude (return, ($))
+import Prelude (compare, return, ($))
 
 -- TODO(rodrigo): make loadModel to able to load single element or list
 ---------------------------------------------------------------------------------------------------
@@ -52,3 +58,8 @@ saveModel filename value = do
 saveModelList :: (ToJSON a) => String -> [a] -> IO ()
 saveModelList filename value = do
     writeContents filename $ Char8.unpack $ encode value
+
+---------------------------------------------------------------------------------------------------
+shuffleModelList :: (ToJSON a) => [a] -> Int -> [a]
+shuffleModelList models seed =
+    [ item | (_, item) <- shuffleList [ (pos, a) | (pos, a) <- zip (randomList [seed]) models ] ]
