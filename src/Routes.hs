@@ -16,8 +16,8 @@ import Prelude (($), return)
 
 --------------------------------------------------------------------------------------------------
 type GalleryApi =
-    "health-check/liveness" :> HC.HealthCheck
-    :<|> "health-check/readiness" :> HC.HealthCheckReadiness
+    "health-check" :> "liveness" :> HC.HealthCheck
+    :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
 
 --------------------------------------------------------------------------------------------------
 gallery :: Proxy GalleryApi
