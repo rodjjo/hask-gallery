@@ -40,6 +40,8 @@ dependencies:
 - split >= 0.2.3.4 && < 0.2.4
 - time >= 1.8.0.0 && < 1.10
 - zlib >= 0.6.0.0 && < 0.7
+- stm >= 2.5.0.0 && < 2.6
+- transformers >= 0.5.6.2  && < 2.6
 library:
   source-dirs: src
 

@@ -7,6 +7,7 @@ module Models.Video (
          updateCache
         ,loadList
         ,Video(..)
+        ,VideoList
     ) where
 
 import Models.Base (
