@@ -34,6 +34,7 @@ import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), 
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (dropFileName, FilePath)
+import System.FilePath.Posix ((</>))
 import System.IO (IO, readFile, writeFile)
 
 
@@ -47,7 +48,7 @@ baseDir = do
 baseFilePath :: String -> IO String
 baseFilePath path = do
     dir <- baseDir
-    return $ dir ++ "/" ++ path
+    return $ dir </> path
 
 ---------------------------------------------------------------------------------------------------
 readContents :: String -> IO String
