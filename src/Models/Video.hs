@@ -39,7 +39,7 @@ import Data.Maybe (fromJust, Maybe(Nothing))
 import GHC.Generics (Generic)
 import Prelude (Ordering, compare, otherwise, return, undefined, (==), (<), (>), ($), (/=))
 import Text.Show (Show, show)
-import System.FilePath ((</>), dropFileName, FilePath, takeExtension)
+import System.FilePath (dropFileName, FilePath, takeExtension)
 import System.IO (IO, putStrLn)
 
 ---------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ instance ToJSON Video
 
 type VideoList = [Video]
 
-filename = "gallery-videos.json"
+filename = "gallery-videos.hgl"
 
 ---------------------------------------------------------------------------------------------------
 getVideoPath :: Video -> String
