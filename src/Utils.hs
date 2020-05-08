@@ -33,7 +33,7 @@ import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), (>=))
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
-import System.FilePath (combine, dropFileName, FilePath)
+import System.FilePath (dropFileName, FilePath)
 import System.IO (IO, readFile, writeFile)
 
 
@@ -47,7 +47,7 @@ baseDir = do
 baseFilePath :: String -> IO String
 baseFilePath path = do
     dir <- baseDir
-    return $ combine dir path
+    return $ dir ++ "/" ++ path
 
 ---------------------------------------------------------------------------------------------------
 readContents :: String -> IO String
@@ -56,7 +56,7 @@ readContents filename = do
     fileexists <- doesFileExist filepath
     if fileexists
         then readFile filepath
-        else return ("{}" ::String)
+        else return ("" ::String)
 
 ---------------------------------------------------------------------------------------------------
 quicksort :: Ord a => [a] -> [a]

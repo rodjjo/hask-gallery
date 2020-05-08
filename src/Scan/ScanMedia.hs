@@ -14,7 +14,8 @@ import Data.String (String)
 import Data.Char (toLower)
 import Prelude (not, return, (==), ($))
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
-import System.FilePath ((</>), dropFileName, FilePath, takeExtension)
+import System.FilePath (dropFileName, FilePath, takeExtension)
+import System.FilePath.Posix ((</>))
 import System.IO (IO)
 
 ---------------------------------------------------------------------------------------------------
