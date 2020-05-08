@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Gallery
+      Application
       Management.Command
       Models.Base
       Models.Settings
@@ -35,6 +35,8 @@ library
       Probe.FFProbe
       Scan.ScanMedia
       Utils
+      Routes
+      Views.HealthChecker
   other-modules:
       Paths_hask_gallery
   hs-source-dirs:

@@ -1,0 +1,43 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+
+module Views.HealthChecker (
+         healthCheck
+        ,HealthCheck
+        ,healthCheckReadiness
+        ,HealthCheckReadiness
+    ) where
+
+import Data.Aeson (FromJSON, ToJSON)
+import Data.Text  (Text)
+import Data.Eq (Eq)
+import GHC.Generics (Generic)
+import Servant.API (Get)
+import Servant (JSON)
+import Text.Read (Read)
+import Text.Show (Show)
+import Prelude (return, ($))
+import System.IO (IO)
+import Servant.Server.Internal.Handler (Handler(..))
+
+---------------------------------------------------------------------------------------------------
+data ServerStatus = ServerStatus
+    { status :: Text
+    , information :: Text
+    } deriving (Eq, Show, Read, Generic)
+instance FromJSON ServerStatus
+instance ToJSON ServerStatus
+
+---------------------------------------------------------------------------------------------------
+type HealthCheck = Get '[JSON] ServerStatus
+
+healthCheck :: ServerStatus
+healthCheck = ServerStatus "alive" "Just livness check"
+
+---------------------------------------------------------------------------------------------------
+type HealthCheckReadiness = Get '[JSON] ServerStatus  -- change this
+
+healthCheckReadiness :: ServerStatus
+healthCheckReadiness = ServerStatus "alive" "Not implemented yet"
