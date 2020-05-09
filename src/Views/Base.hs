@@ -8,7 +8,7 @@ module  Views.Base (
 import qualified Models.Settings as ST
 import qualified Models.Video as MV
 
-import Control.Concurrent.STM.TVar (TVar, newTVar, readTVar, writeTVar)
+import Control.Concurrent.STM.TVar (TVar, newTVar)
 import Control.Monad.Trans.Reader  (ReaderT)
 import Control.Monad.STM (atomically)
 import Text.Read (Read)

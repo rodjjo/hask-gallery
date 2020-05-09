@@ -6,6 +6,10 @@
 module Models.Video (
          updateCache
         ,loadList
+        ,getGalleryVideos
+        ,getGalleryPath
+        ,getGalleryDuration
+        ,getGalleryCount
         ,Video(..)
         ,VideoList
         ,VideoGallery
@@ -68,6 +72,22 @@ instance ToJSON VideoGallery
 filename = "gallery-videos.hgl"
 
 emptyGallery = VideoGallery ([] ::VideoList) "" 0 0
+
+---------------------------------------------------------------------------------------------------
+getGalleryVideos :: VideoGallery -> VideoList
+getGalleryVideos (VideoGallery p1 _ _ _ ) = p1
+
+---------------------------------------------------------------------------------------------------
+getGalleryPath :: VideoGallery -> String
+getGalleryPath (VideoGallery _ p1 _ _ ) = p1
+
+---------------------------------------------------------------------------------------------------
+getGalleryCount :: VideoGallery -> Int
+getGalleryCount (VideoGallery _ _ p1 _ ) = p1
+
+---------------------------------------------------------------------------------------------------
+getGalleryDuration :: VideoGallery -> Int
+getGalleryDuration (VideoGallery _ _ _ p1 ) = p1
 
 ---------------------------------------------------------------------------------------------------
 getVideoPath :: Video -> String
