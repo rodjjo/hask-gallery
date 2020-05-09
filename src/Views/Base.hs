@@ -23,5 +23,5 @@ data State = State { videos :: TVar MV.VideoList }
 loadInitialState :: IO (TVar MV.VideoList)
 loadInitialState = do
     videosList <- MV.loadList
-    videosListState <- atomically $ newTVar videos
+    videosListState <- atomically $ newTVar videosList
     return videosListState
