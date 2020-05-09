@@ -17,6 +17,7 @@ module Utils (
         ,quicksortM
         ,randomList
         ,shuffleList
+        ,dropFirstSlash
     ) where
 
 import Control.Monad (Monad)
@@ -30,7 +31,7 @@ import Data.List (filter, (++))
 import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
 import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), (>=))
+import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), (>=), (==))
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (dropFileName, FilePath)
@@ -136,3 +137,8 @@ fromWord32 n = fromInteger $ toInteger n
 
 nextRandomNumber :: Int -> Int
 nextRandomNumber seed = fromWord32 $ randomShl2 $ randomShlShr $ toWord32 seed
+
+---------------------------------------------------------------------------------------------------
+dropFirstSlash :: FilePath -> FilePath
+dropFirstSlash [] = ""
+dropFirstSlash (x:xs) = if x == '/' then xs else x:xs

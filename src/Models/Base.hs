@@ -7,9 +7,7 @@
 
 module Models.Base (
      loadModel
-    ,loadModelList
     ,saveModel
-    ,saveModelList
     ,shuffleModelList
     ) where
 
@@ -34,7 +32,6 @@ import System.IO (IO)
 import Prelude (compare, return, ($), (/=))
 
 
--- TODO(rodrigo): make loadModel to able to load single element or list
 ---------------------------------------------------------------------------------------------------
 loadModel :: (FromJSON a) => String -> a -> IO a
 loadModel filename def = do
@@ -46,23 +43,8 @@ loadModel filename def = do
         else return def
 
 ---------------------------------------------------------------------------------------------------
-loadModelList :: (FromJSON a) => String -> IO [a]
-loadModelList filename = do
-    contents <- readContents filename
-    if contents /= ""
-        then case (decode $ decompress (Char8.pack contents)) of
-                Just a -> return a
-                Nothing -> return []
-        else return []
-
----------------------------------------------------------------------------------------------------
 saveModel :: (ToJSON a) => String -> a -> IO ()
 saveModel filename value = do
-    writeContents filename $ Char8.unpack $ compress $ encode value
-
----------------------------------------------------------------------------------------------------
-saveModelList :: (ToJSON a) => String -> [a] -> IO ()
-saveModelList filename value = do
     writeContents filename $ Char8.unpack $ compress $ encode value
 
 ---------------------------------------------------------------------------------------------------
