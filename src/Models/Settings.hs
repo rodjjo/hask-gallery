@@ -12,13 +12,12 @@ module Models.Settings (
         ,setVideoGalleryPath
         ,getVideoGalleryPath
         ,optionSetter
+        ,validOptions
     ) where
 
 import Models.Base (
          loadModel
         ,saveModel
-        ,saveModelList
-        ,loadModelList
     )
 
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
@@ -41,6 +40,8 @@ instance ToJSON Settings
 new :: Settings
 new = Settings { title="Hask Gallery",  video_gallery_path="" }
 
+----------------------------------------------------------------------------------------------------
+validOptions = ["title", "videos-path"]
 
 ----------------------------------------------------------------------------------------------------
 optionSetter :: String -> (Settings -> String -> Settings)

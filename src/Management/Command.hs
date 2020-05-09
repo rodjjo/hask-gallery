@@ -19,7 +19,7 @@ import Data.String (String)
 import Prelude (otherwise, return, (==), (||), ($))
 import qualified System.Console.ParseArgs as PA
 import System.IO (IO, putStrLn)
-import Text.Show (Show)
+import Text.Show (Show, show)
 
 ---------------------------------------------------------------------------------------------------
 data Options =
@@ -61,9 +61,15 @@ adaptCommand text
 
 ---------------------------------------------------------------------------------------------------
 setSetting :: String -> String -> IO ()
-setSetting option text = do
-    settings <- SM.load
-    SM.save $ (SM.optionSetter $ drop 4 option) settings text
+setSetting cmdOption text = do
+    let option = drop 4 cmdOption
+    if option `elem` SM.validOptions
+        then do
+            settings <- SM.load
+            SM.save $ (SM.optionSetter $ option) settings text
+            putStrLn ("Successfuly configured\nCurrent settings:\n" ++ show settings)
+        else do
+            putStrLn ("Invalid command " ++ option)
 
 ---------------------------------------------------------------------------------------------------
 exec :: (Maybe Int -> IO ()) -> IO ()

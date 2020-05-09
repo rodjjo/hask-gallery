@@ -18,10 +18,10 @@ import Servant.Server.Internal.Handler (Handler(..))
 
 type GalleryMonad = ReaderT State Handler
 
-data State = State { videos :: TVar MV.VideoList }
+data State = State { videos :: TVar MV.VideoGallery }
 
-loadInitialState :: IO (TVar MV.VideoList)
+loadInitialState :: IO (TVar MV.VideoGallery)
 loadInitialState = do
     videosList <- MV.loadList
-    videosListState <- atomically $ newTVar videos
+    videosListState <- atomically $ newTVar videosList
     return videosListState

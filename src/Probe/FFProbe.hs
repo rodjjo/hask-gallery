@@ -14,13 +14,13 @@ module Probe.FFProbe (
 
 import Data.Eq (Eq)
 import Data.List.NonEmpty (NonEmpty)
-import Data.List (head, foldl, (++))
+import Data.List (drop, head, foldl, take, (++))
 import Data.List.Split (endBy, splitOn)
 import Data.Int (Int)
 import Data.Maybe
 import Data.String (String)
 import Data.Bool (Bool)
-import Prelude (last, null, otherwise, read, return, (==), (||), ($), (/=))
+import Prelude (last, length, null, otherwise, read, return, (==), (||), ($), (/=), (*), (+))
 import System.Directory ( getHomeDirectory )
 import System.Exit ( ExitCode(..) )
 import System.FilePath (FilePath)
@@ -41,7 +41,7 @@ data Mediatype = MediaAudio
 
 data MediaInfo = MediaInfo {
          mediaType ::Mediatype
-        ,duration ::String
+        ,duration ::Int
         ,dimensions :: (Int,Int)
     } deriving (Show, Eq)
 
@@ -50,7 +50,7 @@ getDimensions :: MediaInfo -> (Int, Int)
 getDimensions (MediaInfo _  _ dim) = dim
 
 --------------------------------------------------------------------------------------------------
-getDuration :: MediaInfo -> String
+getDuration :: MediaInfo -> Int
 getDuration (MediaInfo _  dur _) = dur
 
 --------------------------------------------------------------------------------------------------
@@ -66,23 +66,34 @@ ffprobeExec filepath = do
         else return $ Just (stdOut ++ "\n" ++ stdErr)
 
 --------------------------------------------------------------------------------------------------
-regexCapture :: String -> String -> String
-regexCapture regex text =
+regexCaptureAll :: String -> String -> [String]
+regexCaptureAll regex text =
     if captured /= []
-        then head captured
-        else ""
+        then captured
+        else [""]
     where
        (_, _, _, captured) = text RE.=~ regex :: (String, String, String, [String])
+
+regexCapture :: String -> String -> String
+regexCapture regex text = head $ regexCaptureAll regex text
 
 --------------------------------------------------------------------------------------------------
 dimensionsRegex = regexCapture "([0-9]{3,5}x[0-9]{3,5})"
 
 --------------------------------------------------------------------------------------------------
-durationRegex = regexCapture "Duration:[ ]+([0-9]{2}:[0-9]{2}:[0-9]{2})"
+durationRegex = regexCaptureAll "Duration:[ ]+([0-9]{2}):([0-9]{2}):([0-9]{2})"
 
 --------------------------------------------------------------------------------------------------
-parseDuration :: String -> String
-parseDuration text = durationRegex text
+parseDuration :: String -> Int
+parseDuration text =
+    (if (length timeList) == 3
+        then ((read $ head timeList) * 3600)
+                + ((read $ head $ drop 1 timeList) * 60)
+                + ((read $ head $ drop 2 timeList))
+        else 0
+    )
+    where
+        timeList = durationRegex text
 
 --------------------------------------------------------------------------------------------------
 parseDimensions :: Int -> Int -> String -> (Int, Int)
@@ -110,9 +121,9 @@ parseMediaType previous text
         | otherwise = previous
 
 --------------------------------------------------------------------------------------------------
-type ParserData = (Mediatype, String, (Int, Int))
+type ParserData = (Mediatype, Int, (Int, Int))
 emptyParserData :: ParserData
-emptyParserData = (MediaUnknow, "", (0, 0))
+emptyParserData = (MediaUnknow, 0, (0, 0))
 
 --------------------------------------------------------------------------------------------------
 parseNext :: ParserData  -> String -> ParserData
@@ -120,7 +131,7 @@ parseNext (mType, duration, (width, height)) text = (
          if mType /= MediaVideo
             then parseMediaType mType text
             else mType
-        ,if duration == ""
+        ,if duration == 0
             then parseDuration text
             else duration
         ,if (width == 0) || (height == 0)
