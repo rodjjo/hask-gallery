@@ -66,7 +66,7 @@ getVideoGalleryPath :: Settings -> String
 getVideoGalleryPath (Settings _ path) = path
 
 ----------------------------------------------------------------------------------------------------
-filename = "gallery-settings.json"
+filename = "gallery-settings.hgl"
 
 ---------------------------------------------------------------------------------------------------
 load :: IO Settings

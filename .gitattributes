@@ -2,3 +2,5 @@
 *.hs text
 *.png binary
 *.jpg binary
+# just to git do not modify it
+*.cabal binary

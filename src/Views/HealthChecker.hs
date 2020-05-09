@@ -10,6 +10,8 @@ module Views.HealthChecker (
         ,HealthCheckReadiness
     ) where
 
+import qualified Views.Base as VB
+
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text  (Text)
 import Data.Eq (Eq)
@@ -33,11 +35,11 @@ instance ToJSON ServerStatus
 ---------------------------------------------------------------------------------------------------
 type HealthCheck = Get '[JSON] ServerStatus
 
-healthCheck :: ServerStatus
-healthCheck = ServerStatus "alive" "Just livness check"
+healthCheck :: VB.GalleryMonad ServerStatus
+healthCheck = return $ ServerStatus "alive" "Just livness check"
 
 ---------------------------------------------------------------------------------------------------
 type HealthCheckReadiness = Get '[JSON] ServerStatus  -- change this
 
-healthCheckReadiness :: ServerStatus
-healthCheckReadiness = ServerStatus "alive" "Not implemented yet"
+healthCheckReadiness :: VB.GalleryMonad ServerStatus
+healthCheckReadiness = return $ ServerStatus "alive" "Not implemented yet"

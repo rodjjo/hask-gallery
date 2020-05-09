@@ -10,7 +10,8 @@ module Routes (
     ) where
 
 import qualified Views.HealthChecker as HC
-import Servant (Server(..), Proxy(..), JSON)
+import qualified Views.Base as VB
+import Servant (ServerT(..), Proxy(..), JSON)
 import Servant.API  (Get(..), (:<|>)(..), (:>)(..))
 import Prelude (($), return)
 
@@ -24,8 +25,8 @@ gallery :: Proxy GalleryApi
 gallery = Proxy
 
 --------------------------------------------------------------------------------------------------
-endpoints :: Server GalleryApi
+endpoints :: ServerT GalleryApi VB.GalleryMonad
 endpoints = a :<|> b
     where
-        a = return $ HC.healthCheck
-        b = return $ HC.healthCheckReadiness
+        a = HC.healthCheck
+        b = HC.healthCheckReadiness
