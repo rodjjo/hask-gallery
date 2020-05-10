@@ -26,7 +26,7 @@ import Servant.API  (Capture(..), CaptureAll(..), Get(..), (:<|>)(..), (:>)(..))
 type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
-    :<|> "videos" :> Capture "seed" Int :> Capture "page" Int :> VG.GetVideoList
+    :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> VG.GetVideoList
     :<|> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
