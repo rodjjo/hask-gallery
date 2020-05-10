@@ -9,6 +9,7 @@ module Views.File (
     ) where
 
 import qualified Views.Base as VB
+import qualified Utils as UT
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
@@ -36,6 +37,5 @@ instance ToJSON ServerStatus
 type GetFile = Get '[JSON] ServerStatus
 
 getFile :: [String] -> VB.GalleryMonad ServerStatus
-getFile path = do
-    let filepath = (foldl (\x y -> x ++ "/" ++ y) "" path)
-    return $ ServerStatus "info" filepath
+getFile filePath = do
+    return $ ServerStatus "info" $ UT.filePathFromList filePath

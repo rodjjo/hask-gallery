@@ -18,16 +18,20 @@ module Utils (
         ,randomList
         ,shuffleList
         ,dropFirstSlash
+        ,dropFirstDot
+        ,filePathFromList
+        ,lowerPath
     ) where
 
 import Control.Monad (Monad)
+import Data.Char (toLower)
 import Data.Bits (xor, shiftL, shiftR)
 import Data.Bool (Bool)
 import Data.Word (Word32)
 import Data.String (String)
 import Data.Int (Int)
 import Data.Ord (Ord)
-import Data.List (filter, (++))
+import Data.List (filter, foldl, map, (++))
 import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
 import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
@@ -142,3 +146,16 @@ nextRandomNumber seed = fromWord32 $ randomShl2 $ randomShlShr $ toWord32 seed
 dropFirstSlash :: FilePath -> FilePath
 dropFirstSlash [] = ""
 dropFirstSlash (x:xs) = if x == '/' then xs else x:xs
+
+---------------------------------------------------------------------------------------------------
+dropFirstDot :: FilePath -> FilePath
+dropFirstDot [] = ""
+dropFirstDot (x:xs) = if x == '.' then xs else x:xs
+
+---------------------------------------------------------------------------------------------------
+filePathFromList :: [FilePath] -> FilePath
+filePathFromList filePath = foldl (\x y -> x ++ "/" ++ y) "" filePath
+
+---------------------------------------------------------------------------------------------------
+lowerPath :: String -> String
+lowerPath = map toLower
