@@ -13,13 +13,14 @@ import qualified Models.Video as MV
 import qualified Models.Base as MB
 import qualified Utils as UT
 
-import Control.Concurrent.STM.TVar (TVar, readTVar, writeTVar)
+import Control.Concurrent.STM.TVar (TVar, readTVar)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.STM (atomically)
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text  (Text)
 import Data.Int (Int)
+import Data.Word (Word32)
 import Data.Eq (Eq)
 import Data.List (take, drop)
 import GHC.Generics (Generic)
@@ -73,8 +74,12 @@ paginateVideoList theList theSeed thePage thePageSize = do
 ---------------------------------------------------------------------------------------------------
 type GetVideoList = Get '[JSON] VideosPayload
 
-getVideoList :: Int -> Int -> VB.GalleryMonad VideosPayload
-getVideoList seed page = do
+pageToInt :: Word32 -> Int
+pageToInt page = fromInteger $ toInteger page
+
+getVideoList :: Int -> Word32 -> VB.GalleryMonad VideosPayload
+getVideoList seed unsingedPage = do
+    let page = pageToInt unsingedPage
     VB.State { VB.videos = p } <- ask
     gallery <- liftIO $ atomically $ readTVar p
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
