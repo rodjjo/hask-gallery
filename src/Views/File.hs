@@ -16,6 +16,7 @@ import Control.Concurrent.STM.TVar (TVar, readTVar, writeTVar)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.STM (atomically)
 import Control.Monad.Trans.Reader (ask)
+import qualified Data.ByteString.Lazy as LBS
 import Data.String (String)
 import Servant.API (GetPartialContent)
 import Prelude (return, ($))
@@ -33,4 +34,4 @@ getFile galleryName path = do  -- galleryName wiil be used to switch between vid
     VB.State { VB.videos = p } <- ask
     gallery <- liftIO $ atomically $ readTVar p
     let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
-    return $ VB.responseWithMime ".html" "<b>Not implemented yet</b>"
+    return $ VB.lazyResponseWithMime filePath LBS.empty

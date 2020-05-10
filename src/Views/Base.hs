@@ -10,6 +10,7 @@
 module  Views.Base (
          loadInitialState
         ,responseWithMime
+        ,lazyResponseWithMime
         ,State(..)
         ,WithCT(..)
         ,GalleryMonad(..)
@@ -57,10 +58,17 @@ takeExtensionInLower :: FilePath -> T.Text
 takeExtensionInLower filePath =
     T.pack $ UT.lowerPath $ takeExtension filePath
 
+
+--------------------------------------------------------------------------------------------------
+getHeaderMime :: FilePath -> LBS.ByteString
+getHeaderMime filePath = LBS.fromChunks [(defaultMimeLookup (takeExtensionInLower filePath))]
+
 --------------------------------------------------------------------------------------------------
 responseWithMime :: FilePath -> B.ByteString -> WithCT
 responseWithMime filePath rawData =
-    WithCT {
-        header = LBS.fromChunks [(defaultMimeLookup (takeExtensionInLower filePath))]
-        , content = LBS.fromChunks [rawData]
-        }
+    WithCT { header=getHeaderMime filePath , content=LBS.fromChunks [rawData] }
+
+--------------------------------------------------------------------------------------------------
+lazyResponseWithMime :: FilePath -> LBS.ByteString -> WithCT
+lazyResponseWithMime filePath rawData =
+    WithCT { header=getHeaderMime filePath, content=rawData }
