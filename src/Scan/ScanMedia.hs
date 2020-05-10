@@ -6,6 +6,7 @@ module Scan.ScanMedia (
         searchForVideos
     ) where
 
+import Utils (lowerPath)
 import Control.Monad (mapM, filterM)
 import Data.Bool (Bool(..))
 import Data.Int (Int)
@@ -17,10 +18,6 @@ import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath (dropFileName, FilePath, takeExtension)
 import System.FilePath.Posix ((</>))
 import System.IO (IO)
-
----------------------------------------------------------------------------------------------------
-lowerPath :: String -> String
-lowerPath = map toLower
 
 ---------------------------------------------------------------------------------------------------
 anyOfExtension :: [String] -> String -> Bool
