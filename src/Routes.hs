@@ -21,13 +21,14 @@ import Data.String (String)
 import Prelude (($), return)
 import Servant (ServerT(..), Proxy(..), JSON)
 import Servant.API  (Capture(..), CaptureAll(..), Get(..), (:<|>)(..), (:>)(..))
+import qualified Servant.API.Header as RQ
 
 --------------------------------------------------------------------------------------------------
 type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
     :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> VG.GetVideoList
-    :<|> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
+    :<|> RQ.Header "Range" String :> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
 --------------------------------------------------------------------------------------------------
