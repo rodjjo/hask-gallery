@@ -13,7 +13,7 @@ import qualified Models.Video as MV
 import qualified Models.Base as MB
 import qualified Utils as UT
 
-import Control.Concurrent.STM.TVar (TVar, readTVar, writeTVar)
+import Control.Concurrent.STM.TVar (TVar, readTVar)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.STM (atomically)
 import Control.Monad.Trans.Reader (ask)
