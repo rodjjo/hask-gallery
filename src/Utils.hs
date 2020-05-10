@@ -21,6 +21,7 @@ module Utils (
         ,dropFirstDot
         ,filePathFromList
         ,lowerPath
+        ,relativePathFromList
     ) where
 
 import Control.Monad (Monad)
@@ -157,5 +158,9 @@ filePathFromList :: [FilePath] -> FilePath
 filePathFromList filePath = foldl (\x y -> x ++ "/" ++ y) "" filePath
 
 ---------------------------------------------------------------------------------------------------
-lowerPath :: String -> String
+lowerPath :: FilePath -> FilePath
 lowerPath = map toLower
+
+---------------------------------------------------------------------------------------------------
+relativePathFromList :: [String] -> FilePath
+relativePathFromList path = dropFirstSlash $ filePathFromList path

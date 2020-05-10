@@ -55,7 +55,7 @@ type GetAsset = Get '[OctetStream] VB.WithCT
 
 getAsset :: [String] -> VB.GalleryMonad VB.WithCT
 getAsset path = do
-    let filePath = UT.dropFirstSlash $ UT.filePathFromList path
+    let filePath = UT.relativePathFromList path
     let contents = findEmbeddedAsset (if filePath `elem` ["index.html", ""] then "index.html" else filePath)
     if contents == Nothing
         then return $ VB.WithCT {VB.header = "text/plain", VB.content = "Not Found!"}

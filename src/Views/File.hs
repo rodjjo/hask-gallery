@@ -28,7 +28,8 @@ import Servant.Server.Internal.Handler (Handler(..))
 type  GetFile = GetPartialContent '[OctetStream] VB.WithCT
 
 getFile :: [String] -> VB.GalleryMonad VB.WithCT
-getFile filePath = do
+getFile path = do
+    let filePath = UT.relativePathFromList path
     VB.State { VB.videos = p } <- ask
     gallery <- liftIO $ atomically $ readTVar p
     return $ VB.responseWithMime ".html" "<b>Not implemented yet</b>"
