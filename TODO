@@ -1,1 +1,2 @@
 [x] Separate util functions like getBaseDirectory in other modules
+[ ] Do not allow to run the server without defining a gallery path and scanning the files
