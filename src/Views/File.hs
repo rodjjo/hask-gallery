@@ -37,7 +37,7 @@ getFile galleryName path = do  -- galleryName wiil be used to switch between vid
         ("videos") -> do
             gallery <- liftIO $ atomically $ readTVar p
             let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
-            fileContents <- liftIO $ SF.streamFile filePath 0 -- TODO: replace ZERO with a range to seek
+            fileContents <- liftIO $ SF.streamFile filePath 0 (-1) -- TODO: replace ZERO with a range to seek
             return $ VB.lazyResponseWithMime filePath fileContents
         (_) -> do  -- TODO: create other galleries (music and pictures)
             return $ VB.lazyResponseWithMime ".txt" LBS.empty
