@@ -28,7 +28,7 @@ import Servant.API (Get, GetPartialContent, (:>))
 import qualified Servant.API.ResponseHeaders as RH
 import qualified Servant.API.Header as RQ
 import Prelude (return, read, ($), (<$>), (==), (/=), (>=), (<), (+), (-))
-import System.IO (IO)
+import System.IO (IO, putStrLn)
 import Servant (OctetStream)
 import Servant (serveDirectory)
 import Servant.Server.Internal.Handler (Handler(..))
@@ -46,37 +46,54 @@ type ContentHeaders =
      , RQ.Header "Content-Range" String
      ]
 
+---------------------------------------------------------------------------------------------------
 beforeDash :: String -> String
 beforeDash [] = []
 beforeDash (s:m:xs) = [s] ++ if m == '-' then [] else beforeDash (m:xs)
 beforeDash _ = []
 
+---------------------------------------------------------------------------------------------------
 afterDash :: String -> String
 afterDash [] = []
 afterDash (s:xs) = if '-' `elem` xs then afterDash xs else xs
 
+---------------------------------------------------------------------------------------------------
+defaultIfEmpty :: String -> String -> String
+defaultIfEmpty def value  = if value == "" then def else value
 
+---------------------------------------------------------------------------------------------------
 parseRange :: String -> (Int, Int)
+parseRange (' ':xs) = parseRange xs
+parseRange ('=':xs) = parseRange xs
+parseRange ('b':'y':'t':'e':'s':xs) = parseRange xs
 parseRange ('-':xs) = ((read (['-'] ++ xs) ::Int), 0)
 parseRange mrange =
     if '-' `elem` mrange
         then
-            ((read $ beforeDash mrange) ::Int, ((read $afterDash mrange) ::Int) + 1)
+            (
+                (read $ defaultIfEmpty "0" $ beforeDash mrange) ::Int,
+                ((read $ defaultIfEmpty "-1" $ afterDash mrange) ::Int) + 1)
         else (0, 0)
 
+---------------------------------------------------------------------------------------------------
 adaptRange :: Int -> ( Int, Int ) -> Maybe ( Int, Int )
 adaptRange fileSize (start, stop) =
     if start < 0
         then (if (fileSize + start) >= 0 then Just (fileSize + start, fileSize) else Just (0, fileSize))
-        else (if ((start + stop) == 0) then Nothing else Just (start, stop))
+        else (if ((start + stop) == 0) then Nothing else (
+                    if stop >= start
+                        then Just (start, stop)
+                        else Just (start, fileSize)
+                ))
 
+---------------------------------------------------------------------------------------------------
 seekPosLimitFromRange :: (Int, Int) -> (Int, Int)
 seekPosLimitFromRange (rstart, rstop) = (rstart, rstop - rstart)
 
+---------------------------------------------------------------------------------------------------
 serveFileAtRange :: Maybe String -> FilePath -> VB.GalleryMonad FileRangeResponse
 serveFileAtRange requestRange filePath = do
     fileSize <- liftIO $ SF.getFileSize filePath
-
     let mRange = (
             if requestRange /= Nothing
                 then adaptRange fileSize $ parseRange $ fromJust requestRange
@@ -88,13 +105,14 @@ serveFileAtRange requestRange filePath = do
                 else (seekPosLimitFromRange $ fromJust mRange))
 
     fileContents <- liftIO $ SF.streamFile filePath seekPos limit
-    let rangeHeader = ("bytes " ++ (show seekPos) ++ "-" ++ (show (seekPos + limit - 1)) ++ "-" ++ (show fileSize))
+    let rangeHeader = ("bytes " ++ (show seekPos) ++ "-" ++ (show (seekPos + limit - 1)) ++ "/" ++ (show fileSize))
     return
         $ RH.addHeader "bytes"
-        $ RH.addHeader (show limit)
+        $ RH.addHeader (show (limit))
         $ RH.addHeader rangeHeader
         $ VB.lazyResponseWithMime filePath fileContents
 
+---------------------------------------------------------------------------------------------------
 getFile :: Maybe String -> String -> [String] -> VB.GalleryMonad FileRangeResponse
 getFile mrange galleryName path = do  -- galleryName wiil be used to switch between video, music and photo galleries
     VB.State { VB.videos = p } <- ask
