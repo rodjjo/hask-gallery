@@ -16,6 +16,7 @@ import qualified Views.File as VF
 import qualified Views.Static as VS
 
 import Data.Int (Int)
+import Data.Word (Word32)
 import Data.String (String)
 import Prelude (($), return)
 import Servant (ServerT(..), Proxy(..), JSON)
@@ -26,7 +27,7 @@ type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
     :<|> "videos" :> Capture "seed" Int :> Capture "page" Int :> VG.GetVideoList
-    :<|> "files" :> "videos" :>  CaptureAll "path" String :> VF.GetFile
+    :<|> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
 --------------------------------------------------------------------------------------------------

@@ -8,6 +8,7 @@ module Views.File (
         ,GetFile
     ) where
 
+import qualified Models.Video as MV
 import qualified Views.Base as VB
 import qualified Utils as UT
 
@@ -22,14 +23,14 @@ import System.IO (IO)
 import Servant (OctetStream)
 import Servant (serveDirectory)
 import Servant.Server.Internal.Handler (Handler(..))
+import System.FilePath.Posix ((</>))
 
 ---------------------------------------------------------------------------------------------------
---type VF.RawDirectory = Raw
 type  GetFile = GetPartialContent '[OctetStream] VB.WithCT
 
-getFile :: [String] -> VB.GalleryMonad VB.WithCT
-getFile path = do
-    let filePath = UT.relativePathFromList path
+getFile :: String -> [String] -> VB.GalleryMonad VB.WithCT
+getFile galleryName path = do  -- galleryName wiil be used to switch between video, music and photo galleries
     VB.State { VB.videos = p } <- ask
     gallery <- liftIO $ atomically $ readTVar p
+    let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
     return $ VB.responseWithMime ".html" "<b>Not implemented yet</b>"
