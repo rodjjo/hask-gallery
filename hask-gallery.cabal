@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 115bbc258d4b2e97440b0a24bf5aed76bfed94492bba72df192e2e4c98abcb4d
+-- hash: a5f78added6b6d141dfd64aa699de1d8f9d1f51769767cca53f387f261f3ebad
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       Probe.FFProbe
       Routes
       Scan.ScanMedia
+      Stream.File
       Utils
       Views.Base
       Views.File

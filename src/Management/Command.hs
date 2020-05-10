@@ -67,7 +67,8 @@ setSetting cmdOption text = do
         then do
             settings <- SM.load
             SM.save $ (SM.optionSetter $ option) settings text
-            putStrLn ("Successfuly configured\nCurrent settings:\n" ++ show settings)
+            newSettings <- SM.load
+            putStrLn ("Successfuly configured\nCurrent settings:\n" ++ show newSettings)
         else do
             putStrLn ("Invalid command " ++ option)
 
