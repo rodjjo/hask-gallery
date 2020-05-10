@@ -26,7 +26,7 @@ type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
     :<|> "videos" :> Capture "seed" Int :> Capture "page" Int :> VG.GetVideoList
-    :<|> "files" :> CaptureAll "path" String :> VF.GetFile
+    :<|> "files" :> "videos" :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
 --------------------------------------------------------------------------------------------------
