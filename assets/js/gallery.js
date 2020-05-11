@@ -20,7 +20,7 @@ function toggle_random(value, handler) {
 
 function change_video(data) {
     var component = $('#video-viewer');
-    component.attr('src', `/files/videos${data.videoPath}`);
+    component.attr('src', `/files/videos${encodeURI(data.videoPath).replace(/#/g, '%23')}`);
 
     try {
         component[0].play();

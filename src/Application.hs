@@ -9,8 +9,8 @@ import Control.Applicative (Alternative((<|>)))
 import Control.Monad.Trans.Reader  (runReaderT)
 import Data.List ((++))
 import Data.Int (Int)
-import Data.Maybe (fromJust, Maybe(Just))
-import Prelude (($))
+import Data.Maybe (fromJust, Maybe(..))
+import Prelude (return, ($), (==))
 import qualified Servant as SVT
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -19,6 +19,8 @@ import Servant.Server (hoistServer)
 import Servant.Server.Internal.Handler (Handler(..))
 import System.IO (IO, putStrLn)
 import Text.Show (show)
+import Text.Read (readMaybe)
+import System.Environment (lookupEnv)
 
 ---------------------------------------------------------------------------------------------------
 nt :: VB.State -> VB.GalleryMonad a -> Handler a
@@ -28,12 +30,18 @@ app :: VB.State -> SVT.Application
 app s = SVT.serve RT.gallery $ hoistServer RT.gallery (nt s) RT.endpoints
 
 ---------------------------------------------------------------------------------------------------
+portFromEnv :: Int -> IO Int
+portFromEnv def = do
+    mport <- lookupEnv "PORT"
+    if mport == Nothing
+        then return def
+        else return $ (fromJust ((readMaybe $ fromJust mport) <|> Just def))
+
+---------------------------------------------------------------------------------------------------
 runServer :: Maybe Int -> IO ()
 runServer port = do
     state <- VB.loadInitialState
-    let serverPort = fromJust $ port <|> Just 8080 -- TODO(rodrigo): falback port to an environment variable
+    envPort <- portFromEnv 8080
+    let serverPort = fromJust $ port <|> Just envPort
     putStrLn("Running server at port " ++ (show serverPort) ++ "\nPress CTRL-C to terminate")
     run serverPort $ app $ VB.State state
-    --let runApp = run serverPort $ app $ VB.State state
-    -- fork the app if we want to
-    --return ()
