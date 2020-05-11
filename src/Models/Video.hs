@@ -159,7 +159,7 @@ updatedVideoList :: [FilePath] -> VideoList -> IO VideoList
 updatedVideoList [] videolist = return []
 updatedVideoList sortedpaths [] = mapM (videoInfo) sortedpaths
 updatedVideoList (hp:sortedpaths) (hv:videos)
-    | hp < getVideoPath hv = updatedVideoList (hp:sortedpaths) videos
+    | hp > getVideoPath hv = updatedVideoList (hp:sortedpaths) videos
     | hp == getVideoPath hv = addVideo (refreshVideoInfo hv) $ updatedVideoList sortedpaths videos
     | otherwise = updatedVideoList (hp:sortedpaths) ((newVideo hp) : hv : videos)
 
