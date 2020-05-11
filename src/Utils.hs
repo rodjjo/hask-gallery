@@ -146,6 +146,7 @@ nextRandomNumber seed = fromWord32 $ randomShl2 $ randomShlShr $ toWord32 seed
 ---------------------------------------------------------------------------------------------------
 dropFirstSlash :: FilePath -> FilePath
 dropFirstSlash [] = ""
+dropFirstSlash "/" = ""
 dropFirstSlash (x:xs) = if x == '/' then xs else x:xs
 
 ---------------------------------------------------------------------------------------------------
