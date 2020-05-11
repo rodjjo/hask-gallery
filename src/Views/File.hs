@@ -113,17 +113,27 @@ serveFileAtRange requestRange filePath = do
         $ VB.lazyResponseWithMime filePath fileContents
 
 ---------------------------------------------------------------------------------------------------
+emptyResponse :: VB.GalleryMonad FileRangeResponse
+emptyResponse = do
+        return
+            $ RH.addHeader "bytes"
+            $ RH.addHeader "0"
+            $ RH.addHeader "0-0-0"
+            $ VB.lazyResponseWithMime ".txt" LBS.empty
+
+---------------------------------------------------------------------------------------------------
 getFile :: Maybe String -> String -> [String] -> VB.GalleryMonad FileRangeResponse
 getFile mrange galleryName path = do  -- galleryName wiil be used to switch between video, music and photo galleries
     VB.State { VB.videos = p } <- ask
     case galleryName of
         ("videos") -> do
             gallery <- liftIO $ atomically $ readTVar p
-            let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
-            serveFileAtRange mrange filePath
+            if MV.getGalleryPath gallery == ""
+                then do
+                    liftIO $ putStrLn "The video gallery path was not configured"
+                    emptyResponse
+                else do
+                    let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
+                    serveFileAtRange mrange filePath
         (_) -> do  -- TODO: create other galleries (music and pictures)
-            return
-                $ RH.addHeader "bytes"
-                $ RH.addHeader "0"
-                $ RH.addHeader "0-0-0"
-                $ VB.lazyResponseWithMime ".txt" LBS.empty
+            emptyResponse

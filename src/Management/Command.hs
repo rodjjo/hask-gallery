@@ -29,7 +29,7 @@ data Options =
     deriving (Ord, Eq, Show)
 
 commands :: [String]
-commands = ["runserver", "refresh", "gal-title", "gal-videos-path"]
+commands = ["help", "refresh", "gal-title", "gal-videos-path"]
 
 argd :: [ PA.Arg Options ]
 argd = [
@@ -43,7 +43,7 @@ argd = [
             PA.argIndex = OptionCommand,
             PA.argName = Nothing,
             PA.argAbbr = Nothing,
-            PA.argData = PA.argDataRequired "command" PA.ArgtypeString,
+            PA.argData = PA.argDataOptional "command" PA.ArgtypeString,
             PA.argDesc = "Command: " ++ foldl (\a b -> a ++ b ++ "|") "|" commands },
         PA.Arg {
             PA.argIndex = OptionText,
@@ -81,7 +81,8 @@ exec runServer = do
     let text = fromJust $ PA.getArgString args OptionText <|> Just ""
     let port = PA.getArgInt args OptionPort
     case (adaptCommand command) of
-        "runserver" -> runServer port
+        "" -> runServer port
         "gal-config" -> setSetting command text
         "refresh" -> VM.updateCache (SM.getVideoGalleryPath settings)
+        "help" -> putStrLn (PA.argsUsage args)
         _ -> putStrLn ("An unknow command was entered: " ++ command ++ "\n" ++ (PA.argsUsage args))

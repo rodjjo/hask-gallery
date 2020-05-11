@@ -28,7 +28,7 @@ hask-gallery-exe refresh
 
 Run the gallery program
 ```bash
-hask-gallery-exe --port 8080 runserver
+hask-gallery-exe --port 8080
 ```
 
 Then open the webbrowser to use it
@@ -45,7 +45,7 @@ stack build
 # build and run the tests
 stack test
 # run the gallery
-stack run hask-gallery-exe runserver
-# show avaliable management commands
 stack run hask-gallery-exe
+# show avaliable management commands
+stack run hask-gallery-exe help
 ```
