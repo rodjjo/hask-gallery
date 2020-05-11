@@ -4,6 +4,10 @@
 
 **This project is in early development state and it does not have working releases yet.**
 
+Currently this project depends on ffprobe being present and configured at your PATH environment variable.
+
+You can download ffmpeg and ffprobe here [ffmpeg builds](https://ffmpeg.zeranoe.com/builds/)
+
 ## About this project
 
 This project was created just to learn haskell. It will be in early future a gallery to listen to music, to watch video clips or look at pictures.
