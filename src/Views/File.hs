@@ -128,12 +128,16 @@ getFile mrange galleryName path = do  -- galleryName wiil be used to switch betw
     case galleryName of
         ("videos") -> do
             gallery <- liftIO $ atomically $ readTVar p
-            if MV.getGalleryPath gallery == ""
+            let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
+            if UT.isPathUnSafe path
                 then do
-                    liftIO $ putStrLn "The video gallery path was not configured"
+                    liftIO $ putStrLn ("Unsafe path: " ++ filePath)
                     emptyResponse
-                else do
-                    let filePath = (MV.getGalleryPath gallery) </> (UT.relativePathFromList path)
-                    serveFileAtRange mrange filePath
+                else if MV.getGalleryPath gallery == ""
+                        then do
+                            liftIO $ putStrLn "The video gallery path was not configured"
+                            emptyResponse
+                        else do
+                            serveFileAtRange mrange filePath
         (_) -> do  -- TODO: create other galleries (music and pictures)
             emptyResponse

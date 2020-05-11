@@ -22,21 +22,39 @@ module Utils (
         ,filePathFromList
         ,lowerPath
         ,relativePathFromList
+        ,isPathUnSafe
     ) where
 
 import Control.Monad (Monad)
 import Data.Char (toLower)
 import Data.Bits (xor, shiftL, shiftR)
-import Data.Bool (Bool)
+import Data.Bool (Bool(..))
 import Data.Word (Word32)
 import Data.String (String)
 import Data.Int (Int)
 import Data.Ord (Ord)
-import Data.List (filter, foldl, map, (++))
+import Data.List (filter, foldl, elem, map, take, tail, (++))
 import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
 import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-import Prelude (return, fromInteger, toInteger, floor, div, ($), (*), (/), (<), (>=), (==))
+import Prelude (
+         return
+        ,reverse
+        ,fromInteger
+        ,toInteger
+        ,floor
+        ,div
+        ,otherwise
+        ,($)
+        ,(*)
+        ,(&&)
+        ,(/)
+        ,(/=)
+        ,(<)
+        ,(>=)
+        ,(==)
+        ,(||)
+    )
 import System.Directory (doesFileExist, getModificationTime)
 import System.Environment (getExecutablePath)
 import System.FilePath (dropFileName, FilePath)
@@ -165,3 +183,31 @@ lowerPath = map toLower
 ---------------------------------------------------------------------------------------------------
 relativePathFromList :: [String] -> FilePath
 relativePathFromList path = dropFirstSlash $ filePathFromList path
+
+
+---------------------------------------------------------------------------------------------------
+substring :: String -> String -> Bool
+substring (_:_) [] = False
+substring xs ys
+    | prefix xs ys = True
+    | substring xs (tail ys) = True
+    | otherwise = False
+
+---------------------------------------------------------------------------------------------------
+prefix :: String -> String -> Bool
+prefix [] _ = True
+prefix (_:_) [] = False
+prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
+
+
+---------------------------------------------------------------------------------------------------
+isPathUnSafe :: FilePath -> Bool
+isPathUnSafe ('.':'.':x:_) = (x == '\\') || (x == '/')
+isPathUnSafe "" = False
+isPathUnSafe filePath
+        | "/../" `substring` filePath = True
+        | "\\..\\" `substring` filePath = True
+        | "/..\\" `substring` filePath = True
+        | "\\../" `substring` filePath = True
+        | (take 3 $ reverse filePath) `substring` "../\\.." = True
+        | otherwise = False
