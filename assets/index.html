@@ -1,52 +1,75 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="/css/bootstrap.min.css" media="all">
-        <link rel="stylesheet" href="/css/gallery.css">
-        <link href="/css/bootstrap4-toggle.min.css" rel="stylesheet">
-        <title>Hask-Gallery: This page will be modified</title>
-    </head>
 
-    <body>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" href="/css/gallery.css">
+    <link href="/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <title>Welcome to Hask-Gallery 0.1.0</title>
+</head>
 
-<div class="top-panel">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Gallery</a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/">Music</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/">Videos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Directories</a>
-            </li>
-            </ul>
-        </div>
-        </nav>
-    </div>
-
-    <div class="video-panel" >
-        <video id='video-viewer' class='video-panel' loop controls>
+<body>
+    <div class="cover-all-view-port" id="id-videos-div">
+        <video id='id-video' class='html5-video' loop=false nocontrols>
             <source src="" type="video/mp4">
           Your browser does not support the video tag.
         </video>
-      </div>
 
+        <div class="front-panel">
 
-    <div class="footer-panel">
-        <span id='content-info'>&nbsp;</span><br>
-        <span id='page-info'>&nbsp;</span>
+            <!-- Barra de Menu Superior -->
+            <div class="top-panel" id="id-top-panel-video">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="#">Gallery</a>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/">Music</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Videos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Directories</a>
+                        </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <!--// Barra de Menu Superior -->
+
+            <!-- Barra de informações inferior -->
+            <div class="bottom-panel" id="id-bottom-panel-video">
+                <span id='content-info'>&nbsp;</span><br>
+                <div class="full-width">
+                    <table width=100%>
+                        <tr widht=100%>
+                            <td width=150px>
+                                <span id='page-info'>&nbsp;</span>
+                            </td>
+                            <td>
+                                <input class="seekbar custom-seek-bar" id="id-seekbar" type="range" min="0" max="5000"></input>
+                            </td>
+                            <td width=150px>
+                                <div id="id-current-time">00:00</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!--// Barra de informações inferior -->
+
+        </div>
+
     </div>
 
-  </div>
+    <!-- Scripts -->
 
-        <script src="/js/bootstrap.min.js"></script>
-        <script src="/js/jquery-3.4.1.min.js"></script>
-        <script src="/js/gallery.js"></script>
-        <script src="/js/bootstrap4-toggle.min.js"></script>
-    </body>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/gallery.js"></script>
+    <script src="/js/bootstrap4-toggle.min.js"></script>
+
+</body>
 </html>
