@@ -11,6 +11,10 @@ module Models.Settings (
         ,getTitle
         ,setVideoGalleryPath
         ,getVideoGalleryPath
+        ,setMusicGalleryPath
+        ,getMusicGalleryPath
+        ,setPictureGalleryPath
+        ,getPictureGalleryPath
         ,optionSetter
         ,validOptions
     ) where
@@ -30,41 +34,66 @@ import Text.Show (Show)
 
 ---------------------------------------------------------------------------------------------------
 data Settings = Settings {
-        title ::String,
-        video_gallery_path ::String
+     title ::String
+    ,video_gallery_path ::String
+    ,picture_gallery_path ::String
+    ,music_gallery_path ::String
     } deriving (Show, Generic)
 instance FromJSON Settings
 instance ToJSON Settings
 
 ----------------------------------------------------------------------------------------------------
 new :: Settings
-new = Settings { title="Hask Gallery",  video_gallery_path="" }
+new = Settings {
+     title="Hask Gallery"
+    ,video_gallery_path=""
+    ,picture_gallery_path=""
+    ,music_gallery_path=""
+    }
 
 ----------------------------------------------------------------------------------------------------
-validOptions = ["title", "videos-path"]
+validOptions = ["title", "videos-path", "musics-path", "pictures-path"]
 
 ----------------------------------------------------------------------------------------------------
 optionSetter :: String -> (Settings -> String -> Settings)
 optionSetter name
     | (name == "title") = setTitle
     | (name == "videos-path") = setVideoGalleryPath
+    | (name == "musics-path") = setMusicGalleryPath
+    | (name == "pictures-path") = setPictureGalleryPath
     | otherwise = (\settings text -> settings)
 
 ----------------------------------------------------------------------------------------------------
 setTitle :: Settings -> String -> Settings
-setTitle settings value = Settings { title=value, video_gallery_path=getVideoGalleryPath settings }
+setTitle (Settings _ p2 p3 p4 ) value = Settings value p2 p3 p4
 
 ----------------------------------------------------------------------------------------------------
 getTitle :: Settings -> String
-getTitle (Settings title _) = title
+getTitle (Settings title _ _ _) = title
 
 ----------------------------------------------------------------------------------------------------
 setVideoGalleryPath :: Settings -> String -> Settings
-setVideoGalleryPath settings value = Settings { title=getTitle settings, video_gallery_path=value }
+setVideoGalleryPath (Settings p1 _ p3 p4 ) value = Settings  p1 value p3 p4
 
 ----------------------------------------------------------------------------------------------------
 getVideoGalleryPath :: Settings -> String
-getVideoGalleryPath (Settings _ path) = path
+getVideoGalleryPath (Settings _ path _ _) = path
+
+----------------------------------------------------------------------------------------------------
+setMusicGalleryPath :: Settings -> String -> Settings
+setMusicGalleryPath (Settings p1 p2 p3 _) value = Settings p1 p2 p3 value
+
+----------------------------------------------------------------------------------------------------
+getMusicGalleryPath :: Settings -> String
+getMusicGalleryPath (Settings _ _ _ path) = path
+
+----------------------------------------------------------------------------------------------------
+setPictureGalleryPath :: Settings -> String -> Settings
+setPictureGalleryPath (Settings p1 p2 _ p4) value = Settings p1 p2 value p4
+
+----------------------------------------------------------------------------------------------------
+getPictureGalleryPath :: Settings -> String
+getPictureGalleryPath (Settings _ _ path _) = path
 
 ----------------------------------------------------------------------------------------------------
 filename = "gallery-settings.hgl"

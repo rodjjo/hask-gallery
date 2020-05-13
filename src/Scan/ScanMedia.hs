@@ -3,7 +3,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Scan.ScanMedia (
-        searchForVideos
+         searchForVideos
+        ,searchForPictures
+        ,searchForMusics
     ) where
 
 import Utils (lowerPath)
@@ -56,3 +58,5 @@ searchFilesFilter filter = allFilesInSubDirs filter
 
 ---------------------------------------------------------------------------------------------------
 searchForVideos = searchFilesFilter mp4Filter
+searchForPictures = searchFilesFilter pictureFilter
+searchForMusics = searchFilesFilter musicFilter

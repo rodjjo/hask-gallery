@@ -3,13 +3,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Views.VideoGallery (
-         getVideoList
-        ,GetVideoList
+module Views.PictureGallery (
+         getPictureList
+        ,GetPictureList
     ) where
 
 import qualified Views.Base as VB
-import qualified Models.Video as MV
+import qualified Models.Picture as MP
 import qualified Models.Base as MB
 import qualified Utils as UT
 
@@ -18,45 +18,39 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.STM (atomically)
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Text  (Text)
+import Data.Eq (Eq)
 import Data.Int (Int)
 import Data.Word (Word32)
-import Data.Eq (Eq)
-import Data.List (take, drop)
 import GHC.Generics (Generic)
+import Text.Show (Show)
 import Servant.API (Get)
 import Servant (JSON)
-import Text.Read (Read)
-import Text.Show (Show)
 import Prelude (return, ($), (/=))
-import System.IO (IO)
-import Servant.Server.Internal.Handler (Handler(..))
 
 ---------------------------------------------------------------------------------------------------
-data VideosPayload = VideosPayload
-    { items :: MV.VideoList
+
+data PicturePayload = PicturePayload
+    { items :: MP.PictureList
     , itemCount :: Int
-    , totalDuration :: Int
     , pagination :: VB.SimplePagination
     } deriving (Eq, Show, Generic)
-instance FromJSON VideosPayload
-instance ToJSON VideosPayload
+instance FromJSON PicturePayload
+instance ToJSON PicturePayload
 
 ---------------------------------------------------------------------------------------------------
-type GetVideoList = Get '[JSON] VideosPayload
+type GetPictureList = Get '[JSON] PicturePayload
 
-getVideoList :: Int -> Word32 -> VB.GalleryMonad VideosPayload
-getVideoList seed unsingedPage = do
+getPictureList :: Int -> Word32 -> VB.GalleryMonad PicturePayload
+getPictureList  seed unsingedPage = do
     let page = VB.pageToInt unsingedPage
 
     VB.State { VB.galleries = p } <- ask
     allgalleries <- liftIO $ atomically $ readTVar p
-    let gallery = VB.getVideoGallery allgalleries
+    let gallery = VB.getPictureGallery allgalleries
 
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
-    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MV.getGalleryVideos gallery) randomSeed page 100
-    return VideosPayload { items = shuffledList
-                         , itemCount = MV.getGalleryCount gallery
-                         , totalDuration = MV.getGalleryDuration gallery
+    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MP.getGalleryPictures gallery) randomSeed page 100
+    return PicturePayload { items = shuffledList
+                         , itemCount = MP.getGalleryCount gallery
                          , pagination = pagination
                          }

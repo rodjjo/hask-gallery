@@ -31,7 +31,6 @@ import Data.String (String)
 import System.IO (IO)
 import Prelude (compare, return, ($), (/=))
 
-
 ---------------------------------------------------------------------------------------------------
 loadModel :: (FromJSON a) => String -> a -> IO a
 loadModel filename def = do

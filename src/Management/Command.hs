@@ -6,7 +6,9 @@ module Management.Command (
         exec
     ) where
 
-import qualified Models.Video as VM
+import qualified Models.Video as MV
+import qualified Models.Picture as MP
+import qualified Models.Music as MM
 import qualified Models.Settings as SM
 
 import Control.Applicative (Alternative((<|>)))
@@ -29,7 +31,7 @@ data Options =
     deriving (Ord, Eq, Show)
 
 commands :: [String]
-commands = ["help", "refresh", "gal-title", "gal-videos-path"]
+commands = ["help", "refresh", "gal-title", "gal-videos-path", "gal-musics-path", "gal-pictures-path"]
 
 argd :: [ PA.Arg Options ]
 argd = [
@@ -83,6 +85,9 @@ exec runServer = do
     case (adaptCommand command) of
         "" -> runServer port
         "gal-config" -> setSetting command text
-        "refresh" -> VM.updateCache (SM.getVideoGalleryPath settings)
+        "refresh" -> do
+            MV.updateCache (SM.getVideoGalleryPath settings)
+            MM.updateCache (SM.getMusicGalleryPath settings)
+            MP.updateCache (SM.getPictureGalleryPath settings)
         "help" -> putStrLn (PA.argsUsage args)
         _ -> putStrLn ("An unknow command was entered: " ++ command ++ "\n" ++ (PA.argsUsage args))
