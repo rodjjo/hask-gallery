@@ -1,10 +1,10 @@
 name:                hask-gallery
 version:             0.1.0.0
-github:              "githubuser/hask-gallery"
+github:              "rodjjo/hask-gallery"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+author:              "Rodrigo A. Araujo"
+maintainer:          "rodjjo@gmail.com"
+copyright:           "2020 Rodrigo Antonio de Araujo"
 
 extra-source-files:
 - README.md
