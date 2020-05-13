@@ -11,6 +11,8 @@ module Views.File (
     ) where
 
 import qualified Models.Video as MV
+import qualified Models.Music as MM
+import qualified Models.Picture as MP
 import qualified Views.Base as VB
 import qualified Utils as UT
 import qualified Stream.File as SF
@@ -142,5 +144,31 @@ getFile mrange galleryName path = do
                             emptyResponse
                         else do
                             serveFileAtRange mrange filePath
-        (_) -> do  -- TODO: create other galleries (music and pictures)
+        ("musics") -> do
+            let gallery = VB.getMusicGallery allgalleries
+            let filePath = (MM.getGalleryPath gallery) </> pathString
+            if UT.isPathUnSafe pathString
+                then do
+                    liftIO $ putStrLn ("Unsafe path: " ++ filePath)
+                    emptyResponse
+                else if MM.getGalleryPath gallery == ""
+                        then do
+                            liftIO $ putStrLn "The music gallery path was not configured"
+                            emptyResponse
+                        else do
+                            serveFileAtRange mrange filePath
+        ("pictures") -> do
+            let gallery = VB.getPictureGallery allgalleries
+            let filePath = (MP.getGalleryPath gallery) </> pathString
+            if UT.isPathUnSafe pathString
+                then do
+                    liftIO $ putStrLn ("Unsafe path: " ++ filePath)
+                    emptyResponse
+                else if MP.getGalleryPath gallery == ""
+                        then do
+                            liftIO $ putStrLn "The picture gallery path was not configured"
+                            emptyResponse
+                        else do
+                            serveFileAtRange mrange filePath
+        (_) -> do
             emptyResponse

@@ -96,6 +96,12 @@ body {
   top: calc(50vh - 100px);
 }
 
+.cover-non-stretched {
+  width: 100vw;
+  height: 100vh;
+  object-fit: scale-down;
+}
+
 a:hover {
   color: cornflowerblue;
 }
@@ -115,4 +121,8 @@ a:hover {
   vertical-align: middle;
   text-align: center;
   align-items: center;
+}
+
+.bottom-panel-picture {
+  height: 50px;
 }

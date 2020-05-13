@@ -17,9 +17,14 @@
         </div>
 
         <div class="page picture-page" id="id-picture-page">
+            <img src="" id="id-picture" class="cover-non-stretched"></img>
         </div>
 
-        <div class="page music-page" id="id-music-page">
+        <div class="page music-page" id="id-audio-page">
+            <audio id='id-audio' class='html5-audio' noloop nocontrols>
+                <source src="" type="audio/mpeg">
+            Your browser does not support the audio tag.
+            </audio>
         </div>
 
         <div class="front-panel" id="id-front-panel">
@@ -56,9 +61,39 @@
             <!--//  Barra de informações sobre o video na parte inferior -->
 
             <div class="bottom-panel bottom-panel-music" id="id-bottom-panel-music">
+                <span id='content-info-music'>&nbsp;</span><br>
+                <div class="full-width">
+                    <table width=100%>
+                        <tr widht=100%>
+                            <td width=180px>
+                                <span id='id-audio-page-info'>&nbsp;</span>
+                            </td>
+                            <td>
+                                <input class="seekbar custom-seek-bar" id="id-audio-seekbar" type="range" min="0" value="0" max="5000"></input>
+                            </td>
+                            <td width=180px>
+                                <div id="id-audio-time">00:00</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
             <div class="bottom-panel bottom-panel-picture" id="id-bottom-panel-picture">
+                <div class="full-width">
+                    <table width=100%>
+                        <tr widht=100%>
+                            <td width=180px>
+                                <span id='id-count-picture'>&nbsp;</span>
+                            </td>
+                            <td> <span id='id-path-picture'>&nbsp;</span>
+                            </td>
+                            <td width=180px>
+                                &nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
 
