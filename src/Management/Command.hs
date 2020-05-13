@@ -29,7 +29,7 @@ data Options =
     deriving (Ord, Eq, Show)
 
 commands :: [String]
-commands = ["help", "refresh", "gal-title", "gal-videos-path"]
+commands = ["help", "refresh", "gal-title", "gal-videos-path", "gal-musics-path", "gal-pictures-path"]
 
 argd :: [ PA.Arg Options ]
 argd = [
