@@ -1,6 +1,6 @@
 # hask-gallery
 
-## Atention
+## Attention
 
 **This project is in early development state and it does not have working releases yet.**
 

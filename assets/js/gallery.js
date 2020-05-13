@@ -1,7 +1,47 @@
 function GalleryModule() {
-    let currentIndex = 0;
+    let currentVideoIdx = 0;
+    let currentPictureIdx = 0;
+    let currentMusicIdx = 0;
     let videos = [];
+    let pictures = [];
+    let musics = [];
     let currentPage = "";
+
+    function nextVideo() {
+        currentVideoIdx += 1;
+        displayVideoAtCurrentIndex();
+    }
+
+    function previousVideo() {
+        if (currentVideoIdx > 0) {
+            currentVideoIdx -= 1;
+            displayVideoAtCurrentIndex();
+        }
+    }
+
+    function nextPicture() {
+        currentPictureIdx += 1;
+        displayPictureAtCurrentIndex();
+    }
+
+    function previousPicture() {
+        if (currentPictureIdx > 0) {
+            currentPictureIdx -= 1;
+            displayPictureAtCurrentIndex();
+        }
+    }
+
+    function nextMusic() {
+        currentMusicIdx += 1;
+        displayMusicAtCurrentIndex();
+    }
+
+    function previousMusic() {
+        if (currentMusicIdx > 0) {
+            currentMusicIdx -= 1;
+            displayMusicAtCurrentIndex();
+        }
+    }
 
     const pageControls = {
         "videos": {
@@ -11,19 +51,27 @@ function GalleryModule() {
             "streamingControl": "id-video",
             "topBarControl": "id-top-panel",
             "bottomBarControl": "id-bottom-panel-video",
+            "nextFunction": nextVideo,
+            "previousFunction": previousVideo,
         },
         "music": {
-            "controls": ["id-music-page", "id-bottom-panel-music"],
+            "controls": ["id-audio-page", "id-bottom-panel-music"],
             "order": 1,
             "toggleControl": "id-toggle-music",
             "topBarControl": "id-top-panel",
-            "bottomBarControl": "id-bottom-panel-video",
+            "bottomBarControl": "id-bottom-panel-music",
+            "streamingControl": "id-audio",
+            "nextFunction": nextMusic,
+            "previousFunction": previousMusic,
         },
         "pictures": {
             "controls": ["id-picture-page", "id-bottom-panel-picture"],
             "order": 1,
             "topBarControl": "id-top-panel",
             "toggleControl": "id-toggle-picture",
+            "nextFunction": nextPicture,
+            "previousFunction": previousPicture,
+            "bottomBarControl": "id-bottom-panel-picture",
         }
     };
 
@@ -65,17 +113,39 @@ function GalleryModule() {
     }
 
     const videoFilesURL = composeURI('/files/videos');
-    const songsFilesURL = composeURI('/files/songs');
+    const musicFilesURL = composeURI('/files/musics');
     const pictureFilesURL = composeURI('/files/pictures');
 
     const getVideos = get('/videos/{0}/{1}/');
-    const getSongs = get('/songs/{0}/{1}/');
+    const getMusics = get('/musics/{0}/{1}/');
     const getPictures = get('/pictures/{0}/{1}/');
+
+
+    function dePaginator(getFunction) {
+        return function dePaginate(currentSeed, page, currentList, resultCb) {
+            getFunction(currentSeed, page, function(data) {
+                if (data.pagination.page + 1 < data.pagination.pageCount)
+                    dePaginate(data.pagination.randomSeed, data.pagination.page + 1, currentList.concat(data.items), resultCb);
+                else
+                    resultCb(currentList.concat(data.items))
+            });
+        };
+    }
 
     function updateVideoInfo(data) {
         $('#content-info').text(data.videoPath);
-        $('#id-video-page-info').text(`${currentIndex + 1} of ${videos.length} videos`);
+        $('#id-video-page-info').text(`${currentVideoIdx + 1} of ${videos.length} videos`);
         $('#id-video-seekbar')[0].time = 0;
+    }
+
+    function updateMusicInfo(data) {
+        $('#content-info-music').text(data.videoPath);
+        $('#id-audio-page-info').text(`${currentMusicIdx + 1} of ${musics.length} songs`);
+        $('#id-audio-seekbar')[0].time = 0;
+    }
+    function updatePictureInfo(data) {
+        $("#id-path-picture").text(`${data.picturePath}`);
+        $("#id-count-picture").text(`${currentPictureIdx + 1} of ${pictures.length} pictures`);
     }
 
     function changeVideo(data) {
@@ -85,17 +155,15 @@ function GalleryModule() {
         videoComponent[0].play();
     }
 
-    function nextVideo() {
-        currentIndex += 1;
-        displayVideoAtCurrentIndex();
+    function changeMusic(data) {
+        const musicComponent = $('#id-audio');
+        musicComponent.attr('src', musicFilesURL(data.musicPath));
+        musicComponent[0].play();
     }
 
-
-    function previousVideo() {
-        if (currentIndex > 0) {
-            currentIndex -= 1;
-            displayVideoAtCurrentIndex();
-        }
+    function changePicture(data) {
+        const pictureComponent = $('#id-picture');
+        pictureComponent.attr('src', pictureFilesURL(data.picturePath));
     }
 
     function showPage(pageName) {
@@ -155,30 +223,38 @@ function GalleryModule() {
             return;
         }
 
-        if (currentPage === "videos") {
-            let video = $("#id-video")[0];
-            if (x > (component.width() / 3) * 2) {
-                nextVideo();
-            } else if (x < component.width() / 3) {
-                previousVideo();
-            } else {
-                if (video.paused)
-                    video.play();
-                else
-                    video.pause();
-            }
+        if (x > (component.width() / 3) * 2) {
+            page.nextFunction();
+        } else if (x < component.width() / 3) {
+            page.previousFunction();
+        } else if (page.streamingControl) {
+            let streamingControl = $(`#${page.streamingControl}`)[0];
+            if (streamingControl.paused)
+                streamingControl.play();
+            else
+                streamingControl.pause();
         }
     }
 
-    function validateCurrentIndex() {
-        if (currentIndex >= videos.length)
-            currentIndex = 0;
+    function displayVideoAtCurrentIndex() {
+        if (currentVideoIdx >= videos.length)
+            currentVideoIdx = 0;
+        updateVideoInfo(videos[currentVideoIdx])
+        changeVideo(videos[currentVideoIdx]);
     }
 
-    function displayVideoAtCurrentIndex() {
-        validateCurrentIndex();
-        updateVideoInfo(videos[currentIndex])
-        changeVideo(videos[currentIndex]);
+    function displayPictureAtCurrentIndex() {
+        if (currentPictureIdx >= pictures.length)
+            currentPictureIdx = 0;
+        updatePictureInfo(pictures[currentPictureIdx])
+        changePicture(pictures[currentPictureIdx]);
+    }
+
+    function displayMusicAtCurrentIndex() {
+        if (currentMusicIdx >= musics.length)
+            currentMusicIdx = 0;
+        updateMusicInfo(musics[currentMusicIdx])
+        changeMusic(musics[currentMusicIdx]);
     }
 
     function sec2time(timeInSeconds) {
@@ -196,17 +272,30 @@ function GalleryModule() {
     }
 
     (function enableSeekBar() {
+        // TODO(Rodrigo): Organize this messy
         const video = $('#id-video')[0];
-        const seekbar = $('#id-video-seekbar')[0];
+        const audio = $('#id-audio')[0];
+        const seekbarVideo = $('#id-video-seekbar')[0];
+        const seekbarAudio = $('#id-audio-seekbar')[0];
         video.addEventListener('ended', () => {nextVideo()}, false);
+        audio.addEventListener('ended', () => {nextMusic()}, false);
         video.addEventListener('timeupdate', () => {
             if (!video.seeking) {
-                seekbar.value = video.currentTime / video.duration * seekbar.max
+                seekbarVideo.value = video.currentTime / video.duration * seekbarVideo.max
             }
             $("#id-video-time").text(sec2time(Math.floor(video.currentTime)) + "/" + sec2time(Math.floor(video.duration))); //Change #current to currentTime
         });
-        seekbar.addEventListener('change', () => {
-            video.currentTime = video.duration * seekbar.value / seekbar.max;
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.seeking) {
+                seekbarAudio.value = audio.currentTime / audio.duration * seekbarVideo.max
+            }
+            $("#id-audio-time").text(sec2time(Math.floor(audio.currentTime)) + "/" + sec2time(Math.floor(audio.duration))); //Change #current to currentTime
+        });
+        seekbarVideo.addEventListener('change', () => {
+            video.currentTime = video.duration * seekbarVideo.value / seekbarVideo.max;
+        });
+        seekbarAudio.addEventListener('change', () => {
+            audio.currentTime = audio.duration * seekbarAudio.value / seekbarAudio.max;
         });
     }) ();
 
@@ -223,14 +312,9 @@ function GalleryModule() {
         $("#id-front-panel").mousemove(handleFrontPanelMouseMove);
     }) ();
 
-    (function dePaginate(currentSeed, page, currentList, resultCb) {
-        getVideos(currentSeed, page, function(data) {
-            if (data.pagination.page + 1 < data.pagination.pageCount)
-                dePaginate(data.pagination.randomSeed, data.pagination.page + 1, currentList.concat(data.items), resultCb);
-            else
-                resultCb(currentList.concat(data.items))
-        });
-    }) (0, 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
+    dePaginator(getVideos) (0, 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
+    dePaginator(getPictures) (0, 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
+    dePaginator(getMusics) (0, 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
 
     showPage("videos");
 };
