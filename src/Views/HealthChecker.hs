@@ -20,7 +20,7 @@ import Servant.API (Get)
 import Servant (JSON)
 import Text.Read (Read)
 import Text.Show (Show)
-import Prelude (return, ($))
+import Prelude (fromInteger, return, toInteger, ($), (>=), (/=))
 import System.IO (IO)
 import Servant.Server.Internal.Handler (Handler(..))
 

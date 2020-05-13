@@ -12,6 +12,8 @@ module Routes (
 import qualified Views.HealthChecker as HC
 import qualified Views.Base as VB
 import qualified Views.VideoGallery as VG
+import qualified Views.PictureGallery as PG
+import qualified Views.MusicGallery as MG
 import qualified Views.File as VF
 import qualified Views.Static as VS
 
@@ -28,6 +30,8 @@ type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
     :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> VG.GetVideoList
+    :<|> "musics" :> Capture "seed" Int :> Capture "page" Word32 :> MG.GetMusicList
+    :<|> "pictures" :> Capture "seed" Int :> Capture "page" Word32 :> PG.GetPictureList
     :<|> RQ.Header "Range" String :> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
@@ -38,10 +42,12 @@ gallery = Proxy
 --------------------------------------------------------------------------------------------------
 endpoints :: ServerT GalleryApi VB.GalleryMonad
 endpoints =
-    a :<|> b :<|> c :<|> d :<|> e
+    a :<|> b :<|> c :<|> d :<|> e :<|> f :<|> g
     where
         a = HC.healthCheck
         b = HC.healthCheckReadiness
         c = VG.getVideoList
-        d = VF.getFile
-        e = VS.getAsset -- # keep at last because it capture all
+        d = MG.getMusicList
+        e = PG.getPictureList
+        f = VF.getFile
+        g = VS.getAsset -- # keep at last because it capture all

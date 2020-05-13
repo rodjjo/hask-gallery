@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9251f2af384cb05244ed1539e49a0e2f3ef1771770c1f992256d75c865242b3d
+-- hash: 24b8d2879d969bdc7b7fb10a704da5463b46c9b021e71206a11553ec2977beff
 
 name:           hask-gallery
 version:        0.1.0.0
@@ -42,6 +42,8 @@ library
       Views.Base
       Views.File
       Views.HealthChecker
+      Views.MusicGallery
+      Views.PictureGallery
       Views.Static
       Views.VideoGallery
   other-modules:

@@ -23,6 +23,7 @@ module Utils (
         ,lowerPath
         ,relativePathFromList
         ,isPathUnSafe
+        ,toDouble
     ) where
 
 import Control.Monad (Monad)
@@ -38,7 +39,8 @@ import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
 import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Prelude (
-         return
+         Double
+        ,return
         ,reverse
         ,fromInteger
         ,toInteger
@@ -211,3 +213,7 @@ isPathUnSafe filePath
         | "\\../" `substring` filePath = True
         | (take 3 $ reverse filePath) `substring` "../\\.." = True
         | otherwise = False
+
+---------------------------------------------------------------------------------------------------
+toDouble :: Int -> Double
+toDouble n1 = fromInteger $ toInteger n1
