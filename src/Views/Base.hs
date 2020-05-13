@@ -11,6 +11,10 @@ module  Views.Base (
          loadInitialState
         ,responseWithMime
         ,lazyResponseWithMime
+        ,getVideoGallery
+        ,getMusicGallery
+        ,getPictureGallery
+        ,AllGalleries(..)
         ,State(..)
         ,WithCT(..)
         ,GalleryMonad(..)
@@ -19,6 +23,8 @@ module  Views.Base (
 
 import qualified Models.Settings as ST
 import qualified Models.Video as MV
+import qualified Models.Picture as MP
+import qualified Models.Music as MM
 import qualified Utils as UT
 
 import qualified Data.ByteString.Lazy as LBS
@@ -39,14 +45,32 @@ import System.FilePath (FilePath, takeExtension)
 
 type GalleryMonad = ReaderT State Handler
 
-data State = State { videos :: TVar MV.VideoGallery }
+data AllGalleries =  AllGalleries { videos ::MV.VideoGallery
+                                  , musics ::MM.MusicGallery
+                                  , pics   ::MP.PictureGallery}
+
+data State = State { galleries :: TVar AllGalleries }
 
 --------------------------------------------------------------------------------------------------
-loadInitialState :: IO (TVar MV.VideoGallery)
+loadInitialState :: IO (TVar AllGalleries)
 loadInitialState = do
     videosList <- MV.loadList
-    videosListState <- atomically $ newTVar videosList
-    return videosListState
+    musicsList <- MM.loadList
+    picsList <- MP.loadList
+    galState <- atomically $ newTVar (AllGalleries videosList musicsList picsList)
+    return galState
+
+--------------------------------------------------------------------------------------------------
+getVideoGallery :: AllGalleries -> MV.VideoGallery
+getVideoGallery (AllGalleries v _ _) = v
+
+--------------------------------------------------------------------------------------------------
+getMusicGallery :: AllGalleries -> MM.MusicGallery
+getMusicGallery (AllGalleries _ m _) = m
+
+--------------------------------------------------------------------------------------------------
+getPictureGallery :: AllGalleries -> MP.PictureGallery
+getPictureGallery (AllGalleries _ _ p) = p
 
 --------------------------------------------------------------------------------------------------
 data WithCT = WithCT { header :: LBS.ByteString, content :: LBS.ByteString }

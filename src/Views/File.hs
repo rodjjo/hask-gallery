@@ -123,13 +123,14 @@ emptyResponse = do
 
 ---------------------------------------------------------------------------------------------------
 getFile :: Maybe String -> String -> [String] -> VB.GalleryMonad FileRangeResponse
-getFile mrange galleryName path = do  -- galleryName wiil be used to switch between video, music and photo galleries
-    VB.State { VB.videos = p } <- ask
+getFile mrange galleryName path = do
+    VB.State { VB.galleries = p } <- ask
+    allgalleries <- liftIO $ atomically $ readTVar p
+
     let pathString = UT.relativePathFromList path
     case galleryName of
         ("videos") -> do
-            gallery <- liftIO $ atomically $ readTVar p
-
+            let gallery = VB.getVideoGallery allgalleries
             let filePath = (MV.getGalleryPath gallery) </> pathString
             if UT.isPathUnSafe pathString
                 then do

@@ -80,8 +80,11 @@ pageToInt page = fromInteger $ toInteger page
 getVideoList :: Int -> Word32 -> VB.GalleryMonad VideosPayload
 getVideoList seed unsingedPage = do
     let page = pageToInt unsingedPage
-    VB.State { VB.videos = p } <- ask
-    gallery <- liftIO $ atomically $ readTVar p
+
+    VB.State { VB.galleries = p } <- ask
+    allgalleries <- liftIO $ atomically $ readTVar p
+    let gallery = VB.getVideoGallery allgalleries
+
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
     ( shuffledList, pagination ) <- liftIO $ paginateVideoList (MV.getGalleryVideos gallery) randomSeed page 100
     return VideosPayload { items = shuffledList

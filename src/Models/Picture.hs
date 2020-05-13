@@ -4,7 +4,8 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Models.Picture (
-     Picture(..)
+     loadList
+    ,Picture(..)
     ,PictureList
     ,PictureGallery
 ) where
