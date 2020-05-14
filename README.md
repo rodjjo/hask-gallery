@@ -2,7 +2,7 @@
 
 ## Attention
 
-**This project has a simple gallery for songs, pictures and videos. It has few features but it will have more feature are coming soon.**
+**This project has a simple gallery for songs, pictures and videos. It has few features but it will have more feature soon.**
 
 **The first release will be available soon.**
 
