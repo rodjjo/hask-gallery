@@ -2,7 +2,9 @@
 
 ## Attention
 
-**This project is in early development state and it does not have working releases yet.**
+**This project has a simple gallery for songs, pictures and videos. It has few features but it will have more feature are coming soon.**
+
+**The first release will be available soon.**
 
 Currently this project depends on ffprobe being present and configured at your PATH environment variable.
 
@@ -20,9 +22,9 @@ Configure the gallery
 # set the title of our gallery web page title
 hask-gallery-exe gal-title "Title of my gallery"
 # set the path to look for video files (such music video clips, movies and etc)
-hask-gallery-exe gal-video-path "/path/to/video-clips"
-#not implemented yet: hask-gallery-exe gal-music-path "/path/to/musics"
-#not implemented yet: hask-gallery-exe gal-picture-path "/path/to/pictures"
+hask-gallery-exe gal-videos-path "/path/to/video-clips"
+hask-gallery-exe gal-musics-path "/path/to/musics"
+hask-gallery-exe gal-pictures-path "/path/to/pictures"
 ```
 
 Update the gallery
