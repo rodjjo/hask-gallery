@@ -32,6 +32,7 @@ type GalleryApi =
     :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> VG.GetVideoList
     :<|> "musics" :> Capture "seed" Int :> Capture "page" Word32 :> MG.GetMusicList
     :<|> "pictures" :> Capture "seed" Int :> Capture "page" Word32 :> PG.GetPictureList
+    :<|> "covers" :> CaptureAll "path" String :> MG.GetMusicCover
     :<|> RQ.Header "Range" String :> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset
 
@@ -42,12 +43,13 @@ gallery = Proxy
 --------------------------------------------------------------------------------------------------
 endpoints :: ServerT GalleryApi VB.GalleryMonad
 endpoints =
-    a :<|> b :<|> c :<|> d :<|> e :<|> f :<|> g
+    a :<|> b :<|> c :<|> d :<|> e :<|> f :<|> g :<|> h
     where
         a = HC.healthCheck
         b = HC.healthCheckReadiness
         c = VG.getVideoList
         d = MG.getMusicList
         e = PG.getPictureList
-        f = VF.getFile
-        g = VS.getAsset -- # keep at last because it capture all
+        f = MG.getMusicCover
+        g = VF.getFile
+        h = VS.getAsset -- # keep at last because it capture all
