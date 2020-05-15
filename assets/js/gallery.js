@@ -156,7 +156,7 @@ function GalleryModule() {
     }
 
     function updateMusicInfo(data) {
-        $('#content-info-music').text(data.videoPath);
+        $('#content-info-music').text(data.musicPath);
         $('#id-audio-page-info').text(`${currentMusicIdx + 1} of ${musics.length} songs`);
         $('#id-audio-seekbar')[0].time = 0;
     }
@@ -169,13 +169,17 @@ function GalleryModule() {
         const videoComponent = $('#id-video');
         videoComponent.attr('src', videoFilesURL(data.videoPath));
         videoComponent[0].load();
-        videoComponent[0].play();
+        if (currentPage === 'videos') {
+            videoComponent[0].play();
+        }
     }
 
     function changeMusic(data) {
         const musicComponent = $('#id-audio');
         musicComponent.attr('src', musicFilesURL(data.musicPath));
-        musicComponent[0].play();
+        if (currentPage === 'music') {
+            musicComponent[0].play();
+        }
     }
 
     function changePicture(data) {
@@ -189,12 +193,11 @@ function GalleryModule() {
             const page = pageControls[name];
             const isCurrentPage = (name === pageName);
             const display = isCurrentPage ? "block": "None";
-            const streamingFunction = isCurrentPage ? "play" : "pause";
             page.controls.forEach((controlId) => {
                 $(`#${controlId}`).css("display", display);
             });
-            if (page.streamingControl)
-                ($(`#${page.streamingControl}`)[0][streamingFunction])();
+            if (page.streamingControl && !isCurrentPage)
+                $(`#${page.streamingControl}`)[0].pause();
         });
     }
 
