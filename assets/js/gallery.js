@@ -75,6 +75,23 @@ function GalleryModule() {
         }
     };
 
+    const streamIterationControls =[
+        $("#id-previous"),
+        $("#id-next"),
+        $("#id-pause-play"),
+        $("#id-maximize")
+    ]
+
+    let streamIterationVisibleTimeout = 2;
+
+    setInterval(() => {
+        if (streamIterationVisibleTimeout > 0) {
+            streamIterationVisibleTimeout -= 1;
+        } else {
+            streamIterationControls.forEach((c) => { c.removeClass("buttons-visible");});
+        }
+    }, 200);
+
     const doc = document;
     const de = doc.documentElement;
     const fullScreenTogleFunctions = [
@@ -197,6 +214,13 @@ function GalleryModule() {
         let x = e.pageX - parent_coords.left;
         let y = e.pageY - parent_coords.top;
 
+        streamIterationControls.forEach((c) => {
+            if (!c.hasClass("buttons-visible")) {
+                c.addClass("buttons-visible");
+                streamIterationVisibleTimeout = 2;
+            }
+        });
+
         displayControls(x, y, component.height());
     }
 
@@ -204,37 +228,40 @@ function GalleryModule() {
         (fullScreenTogleFunctions[IsFullScreen() ? 0 : 1]).apply(IsFullScreen() ? doc : de);
     }
 
-    function handleFrontPanelClick(e) {
-        const page = pageControls[currentPage];
-        const component = $(this);
-        const parentCoords = component.offset();
-        const x = e.pageX - parentCoords.left;
-        const y = e.pageY - parentCoords.top;
-        const maxClickableY = page.bottomBarControl ? $( window ).height() - $(`#${page.bottomBarControl}`).height() : 1000000000;
-        const minClickableY = page.topBarControl ? $(`#${page.topBarControl}`).height() : 0;
+    function getCurrentPage() {
+        return pageControls[currentPage];
+    }
 
-        if (maxClickableY < y || y < minClickableY)
-            return;
-
-        e.preventDefault();
-
-        if (y <= component.height() / 4 && x >= component.width() - component.width() / 4) {
-            toggleFullScreen();
-            return;
-        }
-
-        if (x > (component.width() / 3) * 2) {
-            page.nextFunction();
-        } else if (x < component.width() / 3) {
-            page.previousFunction();
-        } else if (page.streamingControl) {
-            let streamingControl = $(`#${page.streamingControl}`)[0];
-            if (streamingControl.paused)
-                streamingControl.play();
-            else
-                streamingControl.pause();
+    function handleFrontButtonClicks(event) {
+        switch (event) {
+            case "next": {
+                return function() {
+                    getCurrentPage().nextFunction();
+                }
+            };
+            case "previous": {
+                return function() {
+                    getCurrentPage().previousFunction();
+                }
+            }
+            case "play": {
+                return function() {
+                    if (getCurrentPage().streamingControl) {
+                        const control = $(`#${getCurrentPage().streamingControl}`)[0];
+                        if (control.paused)
+                            control.play()
+                        else
+                            control.pause()
+                    }
+                }
+            }
+            case "maximize": { return function() {
+                    toggleFullScreen();
+                }
+            }
         }
     }
+
 
     function displayVideoAtCurrentIndex() {
         if (currentVideoIdx >= videos.length)
@@ -308,7 +335,10 @@ function GalleryModule() {
     }) ();
 
     (function enableMouseHandling() {
-        $("#id-front-panel").mouseup(handleFrontPanelClick);
+        $("#id-next").click(handleFrontButtonClicks("next"));
+        $("#id-pause-play").click(handleFrontButtonClicks("play"));
+        $("#id-previous").click(handleFrontButtonClicks("previous"));
+        $("#id-maximize").click(handleFrontButtonClicks("maximize"));
         $("#id-front-panel").mousemove(handleFrontPanelMouseMove);
     }) ();
 
