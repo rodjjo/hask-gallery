@@ -2,6 +2,8 @@
 
 ## Attention
 
+Status: **Work In Progress**
+
 **This project has a simple gallery for songs, pictures and videos. It has few features but it will have more feature soon.**
 
 **The first release will be available soon.**
