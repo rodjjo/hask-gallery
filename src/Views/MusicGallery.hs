@@ -5,7 +5,9 @@
 
 module Views.MusicGallery (
          getMusicList
+        ,getMusicCover
         ,GetMusicList
+        ,GetMusicCover
     ) where
 
 import qualified Views.Base as VB
@@ -20,12 +22,16 @@ import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Eq (Eq)
 import Data.Int (Int)
+import Data.List ((++))
+import Data.String (String)
 import Data.Word (Word32)
 import GHC.Generics (Generic)
 import Text.Show (Show)
 import Servant.API (Get)
 import Servant (JSON)
 import Prelude (return, ($), (/=))
+import System.Directory (doesFileExist)
+import System.FilePath.Posix (takeDirectory, (</>))
 
 ---------------------------------------------------------------------------------------------------
 
@@ -37,6 +43,12 @@ data MusicPayload = MusicPayload
     } deriving (Eq, Show, Generic)
 instance FromJSON MusicPayload
 instance ToJSON MusicPayload
+
+data MusicCoverPayload = MusicCoverPayload
+    { coverPath :: String
+    } deriving (Eq, Show, Generic)
+instance FromJSON MusicCoverPayload
+instance ToJSON MusicCoverPayload
 
 ---------------------------------------------------------------------------------------------------
 type GetMusicList = Get '[JSON] MusicPayload
@@ -56,3 +68,23 @@ getMusicList  seed unsingedPage = do
                          , totalDuration = MM.getGalleryDuration gallery
                          , pagination = pagination
                          }
+
+---------------------------------------------------------------------------------------------------
+type GetMusicCover = Get '[JSON] MusicCoverPayload
+
+getMusicCover :: [String] -> VB.GalleryMonad MusicCoverPayload
+getMusicCover paths = do
+    let musicPath = UT.relativePathFromList paths
+    VB.State { VB.galleries = p } <- ask
+    allgalleries <- liftIO $ atomically $ readTVar p
+    let gallery = VB.getMusicGallery allgalleries
+    if UT.isPathUnSafe musicPath
+        then return $ MusicCoverPayload ""
+        else do
+            let dir = MM.getGalleryPath gallery
+            let musicDir = UT.dropFirstSlash $ takeDirectory ("/" ++ musicPath)
+            let coverPath = dir </> musicDir </> "cover.jpg"
+            existence <- liftIO $ doesFileExist coverPath
+            if existence
+                then return $ MusicCoverPayload ("/files/musics" </> musicDir </> "cover.jpg")
+                else return $ MusicCoverPayload ""

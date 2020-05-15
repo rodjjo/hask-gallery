@@ -70,6 +70,7 @@ function GalleryModule() {
             "topBarControl": "id-top-panel",
             "toggleControl": "id-toggle-picture",
             "nextFunction": nextPicture,
+            "streamingControl": "id-audio",
             "previousFunction": previousPicture,
             "bottomBarControl": "id-bottom-panel-picture",
         }
@@ -136,7 +137,7 @@ function GalleryModule() {
     const getVideos = get('/videos/{0}/{1}/');
     const getMusics = get('/musics/{0}/{1}/');
     const getPictures = get('/pictures/{0}/{1}/');
-
+    const getCover = get('/covers{0}');
 
     function dePaginator(getFunction) {
         return function dePaginate(currentSeed, page, currentList, resultCb) {
@@ -177,7 +178,15 @@ function GalleryModule() {
     function changeMusic(data) {
         const musicComponent = $('#id-audio');
         musicComponent.attr('src', musicFilesURL(data.musicPath));
-        if (currentPage === 'music') {
+        getCover(data.musicPath, (data)=> {
+            if (data.coverPath) {
+                $('#id-audio-cover').css('display', 'block');
+                $('#id-audio-cover').attr('src', data.coverPath);
+            } else {
+                $('#id-audio-cover').css('display', 'none');
+            }
+        });
+        if (currentPage === 'music' || currentPage == 'pictures') {
             musicComponent[0].play();
         }
     }
@@ -188,6 +197,7 @@ function GalleryModule() {
     }
 
     function showPage(pageName) {
+        const previousPage = currentPage;
         currentPage = pageName;
         Object.keys(pageControls).forEach((name) => {
             const page = pageControls[name];
@@ -196,7 +206,7 @@ function GalleryModule() {
             page.controls.forEach((controlId) => {
                 $(`#${controlId}`).css("display", display);
             });
-            if (page.streamingControl && !isCurrentPage)
+            if (page.streamingControl && (previousPage === "videos") || (currentPage === "videos"))
                 $(`#${page.streamingControl}`)[0].pause();
         });
     }

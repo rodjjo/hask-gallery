@@ -9,8 +9,8 @@ body {
 }
 
 :root {
-  --top-panel-height: 80px;
-  --bottom-panel-height: 80px;
+  --top-panel-height: 55px;
+  --bottom-panel-height: 65px;
 }
 
 .cover-all-view-port {
@@ -34,11 +34,14 @@ body {
 
 .front-panel {
   z-index: 10000;
+  display: block;
   position: absolute;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
+  align-content: center;
+  text-align: center;
   background-color: rgba(0, 0, 0, 0.0);
 }
 
@@ -47,7 +50,6 @@ body {
   display: none;
   height: var(--top-panel-height);
   z-index: 10000000;
-  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .bottom-panel {
@@ -122,14 +124,22 @@ a:hover {
 }
 
 .cover-top-panel {
-  width: 100vw;
-  height: 50px;
+  width: 25vw;
+  height: var(--top-panel-height);
+  position: relative;
+  top: 0;
+  left: calc(50vw - 14.5vw);
   color: cyan;
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.2);
   display: table-cell;
   vertical-align: middle;
   text-align: center;
   align-items: center;
+  border-bottom-left-radius: 50px;
+  border-bottom-right-radius: 50px;
 }
+
 
 .bottom-panel-picture {
   height: var(--bottom-panel-height);
@@ -151,6 +161,7 @@ a:hover {
 
 .front-buttons:hover {
   background-color: rgba(90, 90, 45, 0.5);
+  cursor: pointer;
 }
 
 .buttons-visible {
