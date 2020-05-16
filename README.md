@@ -17,7 +17,6 @@ You can download ffmpeg and ffprobe here [ffmpeg builds](https://www.ffmpeg.org/
 ## About this project
 
 This project was created just to learn haskell. It will be in early future a gallery to listen to music, to watch video clips or look at pictures.
-HaskGallery intend to be used for a single user at his computer and it's necessary to open an url in a web browser to use it.
 
 ## How this project works
 
@@ -26,7 +25,7 @@ HaskGallery intend to be used for a single user at his computer and it's necessa
 * The program you scan the directory you passed at the first step looking for media files and storing their information in a file.
 * Finally you can run the hask-gallery without any parameter and open the browser at localhost:8080 url.
 
-## Final user usage
+## Usage
 
 Configure the gallery
 ```bash
@@ -37,6 +36,10 @@ hask-gallery-exe gal-videos-path "/path/to/video-clips"
 hask-gallery-exe gal-musics-path "/path/to/musics"
 hask-gallery-exe gal-pictures-path "/path/to/pictures"
 ```
+
+## Tip
+Leave a file named cover.jpg inside the music directories.
+
 
 Update the gallery
 ```bash
