@@ -12,6 +12,7 @@ import qualified Models.Music as MM
 import qualified Models.Settings as SM
 
 import Control.Applicative (Alternative((<|>)))
+import Data.Bool (Bool)
 import Data.Eq (Eq)
 import Data.Int (Int)
 import Data.List (elem, foldl, drop, take, (++))
@@ -25,8 +26,9 @@ import Text.Show (Show, show)
 
 ---------------------------------------------------------------------------------------------------
 data Options =
-    OptionCommand |
+    OptionHost |
     OptionPort |
+    OptionCommand |
     OptionText
     deriving (Ord, Eq, Show)
 
@@ -35,6 +37,12 @@ commands = ["help", "refresh", "gal-title", "gal-videos-path", "gal-musics-path"
 
 argd :: [ PA.Arg Options ]
 argd = [
+        PA.Arg {
+            PA.argIndex = OptionHost,
+            PA.argName = Just "bindall",
+            PA.argAbbr = Just 'b',
+            PA.argData = PA.argDataOptional "text" PA.ArgtypeString,
+            PA.argDesc = "If True or true bind any address, otherwise bind 127.0.0.1"},
         PA.Arg {
             PA.argIndex = OptionPort,
             PA.argName = Just "port",
@@ -75,15 +83,16 @@ setSetting cmdOption text = do
             putStrLn ("Invalid command " ++ option)
 
 ---------------------------------------------------------------------------------------------------
-exec :: (Maybe Int -> IO ()) -> IO ()
+exec :: (Maybe String -> Maybe Int -> IO ()) -> IO ()
 exec runServer = do
     args <- PA.parseArgsIO (PA.ArgsParseControl PA.ArgsComplete PA.ArgsSoftDash) argd
     settings <- SM.load
     let command = fromJust $ PA.getArgString args OptionCommand <|> Just ""
     let text = fromJust $ PA.getArgString args OptionText <|> Just ""
+    let bindAny = PA.getArgString args OptionHost
     let port = PA.getArgInt args OptionPort
     case (adaptCommand command) of
-        "" -> runServer port
+        "" -> runServer bindAny port
         "gal-config" -> setSetting command text
         "refresh" -> do
             MV.updateCache (SM.getVideoGalleryPath settings)
