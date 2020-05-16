@@ -319,23 +319,36 @@ function GalleryModule() {
         const seekbarAudio = $('#id-audio-seekbar')[0];
         video.addEventListener('ended', () => {nextVideo()}, false);
         audio.addEventListener('ended', () => {nextMusic()}, false);
+        let inSeek = false;
         video.addEventListener('timeupdate', () => {
-            if (!video.seeking) {
+            if (!inSeek) {
                 seekbarVideo.value = video.currentTime / video.duration * seekbarVideo.max
             }
             $("#id-video-time").text(sec2time(Math.floor(video.currentTime)) + "/" + sec2time(Math.floor(video.duration))); //Change #current to currentTime
         });
         audio.addEventListener('timeupdate', () => {
-            if (!audio.seeking) {
+            if (!inSeek) {
                 seekbarAudio.value = audio.currentTime / audio.duration * seekbarVideo.max
             }
             $("#id-audio-time").text(sec2time(Math.floor(audio.currentTime)) + "/" + sec2time(Math.floor(audio.duration))); //Change #current to currentTime
         });
         seekbarVideo.addEventListener('change', () => {
+            inSeek = true;
             video.currentTime = video.duration * seekbarVideo.value / seekbarVideo.max;
+            inSeek = false;
         });
         seekbarAudio.addEventListener('change', () => {
+            inSeek = true;
             audio.currentTime = audio.duration * seekbarAudio.value / seekbarAudio.max;
+            inSeek = false;
+        });
+
+        $(seekbarAudio).mousedown(() => {
+            inSeek = true;
+        });
+
+        $(seekbarVideo).mousedown(() => {
+            inSeek = true;
         });
     }) ();
 
