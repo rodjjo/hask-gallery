@@ -20,7 +20,7 @@ This project was created just to learn haskell. It will be in early future a gal
 
 * First it is necessary to configure the path to the galleries (videos, musics and pictures) (instructions bellow)
 * Second you call hask-gallery-exe with a parameter `refresh`
-* The program you scan the directory you passed at the first step looking for media files and storing their information in a file.
+* The program will scan the directory you passed at the first step looking for media files and storing their information in a file.
 * Finally you can run the hask-gallery without any parameter and open the browser at localhost:8080 url.
 
 ## Usage
