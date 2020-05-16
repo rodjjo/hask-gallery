@@ -110,13 +110,12 @@ loadList :: IO VideoGallery
 loadList = loadModel filename emptyGallery
 
 ---------------------------------------------------------------------------------------------------
-newVideo :: String -> Video
-newVideo path = Video path 0 0 0 0
+newVideo :: String -> Int -> Video
+newVideo path modifiedat = Video path modifiedat 0 0 0
 
 ---------------------------------------------------------------------------------------------------
-metaDataToVideo :: FilePath -> IO Int -> PB.MediaInfo ->  IO Video
-metaDataToVideo path modifiedIO metaData = do
-    modifiedTime <- modifiedIO
+metaDataToVideo :: FilePath -> Int -> PB.MediaInfo ->  IO Video
+metaDataToVideo path modifiedTime metaData = do
     let (vwidth, vheight) = PB.getDimensions metaData
     putStrLn ("Duration: " ++ (show (PB.getDuration metaData)) ++ "secs Width: " ++ (show vwidth) ++ " height: " ++ (show vheight))
     return Video {
@@ -135,9 +134,10 @@ videoInfo path = do
     if videoData == Nothing
         then putStrLn "Could not retrive informations :_("
         else return ()
+    modifiedAt <- getModifiedTime path
     if videoData == Nothing
-        then return $ newVideo path
-        else  metaDataToVideo path (getModifiedTime path) (fromJust videoData)
+        then return $ newVideo path modifiedAt
+        else metaDataToVideo path modifiedAt (fromJust videoData)
 
 ---------------------------------------------------------------------------------------------------
 refreshVideoInfo :: Video -> IO Video
@@ -161,7 +161,7 @@ updatedVideoList sortedpaths [] = mapM (videoInfo) sortedpaths
 updatedVideoList (hp:sortedpaths) (hv:videos)
     | hp > getVideoPath hv = updatedVideoList (hp:sortedpaths) videos
     | hp == getVideoPath hv = addVideo (refreshVideoInfo hv) $ updatedVideoList sortedpaths videos
-    | otherwise = updatedVideoList (hp:sortedpaths) ((newVideo hp) : hv : videos)
+    | otherwise = updatedVideoList (hp:sortedpaths) ((newVideo hp 0) : hv : videos)
 
 ---------------------------------------------------------------------------------------------------
 decomposeVideoGallery :: VideoGallery -> (VideoList, String, Int, Int)
@@ -205,5 +205,6 @@ updateCache :: String -> IO ()
 updateCache gallerpath = do
     hasProbe <- PB.probeInstalled
     if hasProbe
-        then updateCacheInternal gallerpath
+        then putStrLn "ffprobe is present. To gather informations about the videos will be possible."
         else putStrLn "ffprobe was not found in your machine.\nPlease install and configure PATH environment variable\nYou also can download and put the ffprobe aside hask-gallery executable."
+    updateCacheInternal gallerpath

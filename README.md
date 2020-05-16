@@ -8,14 +8,23 @@ Status: **Work In Progress**
 
 **The first release will be available soon.**
 
-Currently this project depends on ffprobe being present and configured at your PATH environment variable.
+Optionaly you can download put ffprobe binary together with hask has-gallery-exe.
+If you do it will use it to retrive informations about the video files.
+You can Also put ffproble location at your PATH environment variable.
 
-You can download ffmpeg and ffprobe here [ffmpeg builds](https://ffmpeg.zeranoe.com/builds/)
+You can download ffmpeg and ffprobe here [ffmpeg builds](https://www.ffmpeg.org/download.html)
 
 ## About this project
 
 This project was created just to learn haskell. It will be in early future a gallery to listen to music, to watch video clips or look at pictures.
 HaskGallery intend to be used for a single user at his computer and it's necessary to open an url in a web browser to use it.
+
+## How this project works
+
+* First it is necessary to configure the path to the galleries (videos, musics and pictures) (instructions bellow)
+* Second you call hask-gallery-exe with a parameter `refresh`
+* The program you scan the directory you passed at the first step looking for media files and storing their information in a file.
+* Finally you can run the hask-gallery without any parameter and open the browser at localhost:8080 url.
 
 ## Final user usage
 
