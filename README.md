@@ -4,7 +4,7 @@
 
 Status: **Work In Progress**
 
-**This project has a simple gallery for songs, pictures and videos. It has few features but it will have more features soon.**
+**This project has a simple gallery for songs, pictures and videos (.mp4). It has few features but it will have more features soon.**
 
 Optionaly you can download put ffprobe binary together with hask-gallery-exe.
 If you do it will use it to retrive informations about the video files.
