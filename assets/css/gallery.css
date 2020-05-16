@@ -128,7 +128,7 @@ a:hover {
   height: var(--top-panel-height);
   position: relative;
   top: 0;
-  left: calc(50vw - 14.5vw);
+  left: calc(50vw - 12.5vw);
   color: cyan;
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.2);
