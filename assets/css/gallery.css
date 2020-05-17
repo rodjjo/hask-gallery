@@ -168,27 +168,38 @@ a:hover {
   background-color: rgba(100, 100, 80, 0.5);
 }
 
-.play-pause-container {
+.play-pause-button {
   left: calc(50vw - 7.5vw);
   -webkit-mask: url(/pics/play-circle.svg) no-repeat center;
   mask: url(/pics/play-circle.svg) no-repeat center;
 }
 
-.next-container {
+.next-button {
   left: calc(50vw + 15vw);
   top: calc(50vh - 7.5vh);
   -webkit-mask: url(/pics/arrow-alt-circle-right.svg) no-repeat center;
   mask: url(/pics/arrow-alt-circle-right.svg) no-repeat center;
 }
 
-.maximize-container {
+.maximize-button {
   left: calc(80vw);
   top: calc(15vh);
   -webkit-mask: url(/pics/window-restore.svg) no-repeat center;
   mask: url(/pics/window-restore.svg) no-repeat center;
 }
 
-.previous-container {
+.repeat-button {
+  left: calc(50vw - 7.5vw);
+  top: calc(50vh + 22.5vh);
+  -webkit-mask: url(/pics/repeat.svg) no-repeat center;
+  mask: url(/pics/repeat.svg) no-repeat center;
+}
+
+.repeat-on {
+  background-color: rgba(125, 216, 88, 0.4);
+}
+
+.previous-button {
   left: calc(50vw - 30vw);
   -webkit-mask: url(/pics/arrow-alt-circle-left.svg) no-repeat center;
   mask: url(/pics/arrow-alt-circle-left.svg) no-repeat center;
