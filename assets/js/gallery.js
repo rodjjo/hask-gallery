@@ -5,7 +5,7 @@ function GalleryModule() {
     let videos = [];
     let pictures = [];
     let musics = [];
-    let currentPage = "";
+    let currentPage = "videos";
 
     function nextVideo() {
         currentVideoIdx += 1;
@@ -43,16 +43,31 @@ function GalleryModule() {
         }
     }
 
+    function hasAttr(element, name) {
+        const attr = element.attr(name);
+        return (typeof attr !== typeof undefined && attr !== false);
+    }
+
+    const streamIterationControls = [
+        $("#id-previous"),
+        $("#id-next"),
+        $("#id-pause-play"),
+        $("#id-maximize"),
+        $("#id-repeat"),
+    ]
+
     const pageControls = {
         "videos": {
             "controls": ["id-video-page", "id-bottom-panel-video"],
             "order": 0,
             "toggleControl": "id-toggle-video",
-            "streamingControl": "id-video",
+            "streamingControl": $("#id-video"),
             "topBarControl": "id-top-panel",
             "bottomBarControl": "id-bottom-panel-video",
             "nextFunction": nextVideo,
             "previousFunction": previousVideo,
+            "streamControls": streamIterationControls,
+            "repeatControl": $("#id-repeat"),
         },
         "music": {
             "controls": ["id-audio-page", "id-bottom-panel-music"],
@@ -60,9 +75,11 @@ function GalleryModule() {
             "toggleControl": "id-toggle-music",
             "topBarControl": "id-top-panel",
             "bottomBarControl": "id-bottom-panel-music",
-            "streamingControl": "id-audio",
+            "streamingControl": $("#id-audio"),
             "nextFunction": nextMusic,
             "previousFunction": previousMusic,
+            "streamControls": streamIterationControls,
+            "repeatControl": $("#id-repeat"),
         },
         "pictures": {
             "controls": ["id-picture-page", "id-bottom-panel-picture"],
@@ -70,26 +87,26 @@ function GalleryModule() {
             "topBarControl": "id-top-panel",
             "toggleControl": "id-toggle-picture",
             "nextFunction": nextPicture,
-            "streamingControl": "id-audio",
+            "streamingControl": $("#id-audio"),
             "previousFunction": previousPicture,
             "bottomBarControl": "id-bottom-panel-picture",
+            "streamControls": streamIterationControls.filter((c) => (c.attr('id') !== "id-repeat")),
         }
     };
 
-    const streamIterationControls =[
-        $("#id-previous"),
-        $("#id-next"),
-        $("#id-pause-play"),
-        $("#id-maximize")
-    ]
+
 
     let streamIterationVisibleTimeout = 2;
 
     setInterval(() => {
         if (streamIterationVisibleTimeout > 0) {
             streamIterationVisibleTimeout -= 1;
-        } else {
-            streamIterationControls.forEach((c) => { c.removeClass("buttons-visible");});
+        } else if (currentPage) {
+            pageControls[currentPage].streamControls
+                .forEach((c) => { c.removeClass("buttons-visible");});
+            if (getCurrentPage().repeatControl) {
+                getCurrentPage().repeatControl.removeClass('repeat-on');
+            }
         }
     }, 200);
 
@@ -196,6 +213,16 @@ function GalleryModule() {
         pictureComponent.attr('src', pictureFilesURL(data.picturePath));
     }
 
+    function showRepeat()  {
+        const page = pageControls[currentPage];
+        if (page.streamingControl && page.repeatControl) {
+            page.repeatControl.removeClass('repeat-on');
+            if (hasAttr(page.streamingControl, 'loop')) {
+                page.repeatControl.addClass('repeat-on');
+            }
+        }
+    }
+
     function showPage(pageName) {
         const previousPage = currentPage;
         currentPage = pageName;
@@ -207,8 +234,37 @@ function GalleryModule() {
                 $(`#${controlId}`).css("display", display);
             });
             if (page.streamingControl && (previousPage === "videos") || (currentPage === "videos"))
-                $(`#${page.streamingControl}`)[0].pause();
+                            page.streamingControl[0].pause();
         });
+        if (previousPage)
+            pageControls[previousPage].streamControls.forEach((c) => {c.css('display', 'none')});
+        pageControls[currentPage].streamControls.forEach((c) => {c.css('display', 'block')});
+        showRepeat();
+        saveSettings();
+    }
+
+    function loadSettings() {
+        const rawSetting = localStorage.getItem('hask-gallery');
+        if (!rawSetting) {
+            return;
+        }
+        const settings = JSON.parse(rawSetting);
+        if (settings.videoRepeat) {
+            $("#id-video").attr('loop', "1");
+        }
+        if (settings.musicRepeat) {
+            $("#id-audio").attr('loop', "1");
+        }
+        currentPage = settings.currentPage || "videos";
+    }
+
+    function saveSettings() {
+        const settings = {
+            videoRepeat: hasAttr($("#id-video"), 'loop'),
+            musicRepeat: hasAttr($("#id-audio"), 'loop'),
+            currentPage,
+        }
+        localStorage.setItem('hask-gallery', JSON.stringify(settings));
     }
 
     function displayControls(x, y, max_y) {
@@ -226,11 +282,11 @@ function GalleryModule() {
         let parent_coords = component.offset();
         let x = e.pageX - parent_coords.left;
         let y = e.pageY - parent_coords.top;
-
         streamIterationControls.forEach((c) => {
             if (!c.hasClass("buttons-visible")) {
                 c.addClass("buttons-visible");
                 streamIterationVisibleTimeout = 2;
+                showRepeat();
             }
         });
 
@@ -260,7 +316,7 @@ function GalleryModule() {
             case "play": {
                 return function() {
                     if (getCurrentPage().streamingControl) {
-                        const control = $(`#${getCurrentPage().streamingControl}`)[0];
+                        const control = getCurrentPage().streamingControl[0];
                         if (control.paused)
                             control.play()
                         else
@@ -272,9 +328,22 @@ function GalleryModule() {
                     toggleFullScreen();
                 }
             }
+            case "repeat": {
+                return function() {
+                    if (getCurrentPage().streamingControl) {
+                        const player = getCurrentPage().streamingControl;
+                        if (hasAttr(player, 'loop')) {
+                            player.attr('loop', false);
+                        } else {
+                            player.attr('loop', '1');
+                        }
+                        showRepeat();
+                        saveSettings();
+                    }
+                }
+            }
         }
     }
-
 
     function displayVideoAtCurrentIndex() {
         if (currentVideoIdx >= videos.length)
@@ -365,6 +434,7 @@ function GalleryModule() {
         $("#id-pause-play").click(handleFrontButtonClicks("play"));
         $("#id-previous").click(handleFrontButtonClicks("previous"));
         $("#id-maximize").click(handleFrontButtonClicks("maximize"));
+        $("#id-repeat").click(handleFrontButtonClicks("repeat"));
         $("#id-front-panel").mousemove(handleFrontPanelMouseMove);
     }) ();
 
@@ -372,7 +442,9 @@ function GalleryModule() {
     dePaginator(getPictures) (0, 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
     dePaginator(getMusics) (0, 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
 
-    showPage("videos");
+    loadSettings();
+
+    showPage(currentPage);
 };
 
 $(document).ready(GalleryModule());
