@@ -20,7 +20,9 @@ import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Eq (Eq)
 import Data.Int (Int)
+import Data.Maybe
 import Data.Word (Word32)
+import Data.String (String)
 import GHC.Generics (Generic)
 import Text.Show (Show)
 import Servant.API (Get)
@@ -40,8 +42,8 @@ instance ToJSON PicturePayload
 ---------------------------------------------------------------------------------------------------
 type GetPictureList = Get '[JSON] PicturePayload
 
-getPictureList :: Int -> Word32 -> VB.GalleryMonad PicturePayload
-getPictureList  seed unsingedPage = do
+getPictureList :: Int -> Word32 -> Maybe String -> VB.GalleryMonad PicturePayload
+getPictureList  seed unsingedPage filter = do
     let page = VB.pageToInt unsingedPage
 
     VB.State { VB.galleries = p } <- ask

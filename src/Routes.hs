@@ -22,16 +22,16 @@ import Data.Word (Word32)
 import Data.String (String)
 import Prelude (($), return)
 import Servant (ServerT(..), Proxy(..), JSON)
-import Servant.API  (Capture(..), CaptureAll(..), Get(..), (:<|>)(..), (:>)(..))
+import Servant.API  (Capture(..), CaptureAll(..), Get(..), QueryParam(..), (:<|>)(..), (:>)(..))
 import qualified Servant.API.Header as RQ
 
 --------------------------------------------------------------------------------------------------
 type GalleryApi =
     "health-check" :> "liveness" :> HC.HealthCheck
     :<|> "health-check" :> "readiness" :> HC.HealthCheckReadiness
-    :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> VG.GetVideoList
-    :<|> "musics" :> Capture "seed" Int :> Capture "page" Word32 :> MG.GetMusicList
-    :<|> "pictures" :> Capture "seed" Int :> Capture "page" Word32 :> PG.GetPictureList
+    :<|> "videos" :> Capture "seed" Int :> Capture "page" Word32 :> QueryParam "filter" String :> VG.GetVideoList
+    :<|> "musics" :> Capture "seed" Int :> Capture "page" Word32 :> QueryParam "filter" String :> MG.GetMusicList
+    :<|> "pictures" :> Capture "seed" Int :> Capture "page" Word32 :> QueryParam "filter" String :> PG.GetPictureList
     :<|> "covers" :> CaptureAll "path" String :> MG.GetMusicCover
     :<|> RQ.Header "Range" String :> "files" :> Capture "gallery" String :>  CaptureAll "path" String :> VF.GetFile
     :<|> CaptureAll "path" String :> VS.GetAsset

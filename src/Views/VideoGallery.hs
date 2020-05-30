@@ -23,6 +23,8 @@ import Data.Int (Int)
 import Data.Word (Word32)
 import Data.Eq (Eq)
 import Data.List (take, drop)
+import Data.Maybe
+import Data.String (String)
 import GHC.Generics (Generic)
 import Servant.API (Get)
 import Servant (JSON)
@@ -45,8 +47,8 @@ instance ToJSON VideosPayload
 ---------------------------------------------------------------------------------------------------
 type GetVideoList = Get '[JSON] VideosPayload
 
-getVideoList :: Int -> Word32 -> VB.GalleryMonad VideosPayload
-getVideoList seed unsingedPage = do
+getVideoList :: Int -> Word32 -> Maybe String -> VB.GalleryMonad VideosPayload
+getVideoList seed unsingedPage filter = do
     let page = VB.pageToInt unsingedPage
 
     VB.State { VB.galleries = p } <- ask

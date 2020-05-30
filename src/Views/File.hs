@@ -124,6 +124,7 @@ emptyResponse = do
             $ VB.lazyResponseWithMime ".txt" LBS.empty
 
 ---------------------------------------------------------------------------------------------------
+-- TODO(Rodrigo): simplify function bellow
 getFile :: Maybe String -> String -> [String] -> VB.GalleryMonad FileRangeResponse
 getFile mrange galleryName path = do
     VB.State { VB.galleries = p } <- ask

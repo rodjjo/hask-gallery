@@ -23,6 +23,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Eq (Eq)
 import Data.Int (Int)
 import Data.List ((++))
+import Data.Maybe
 import Data.String (String)
 import Data.Word (Word32)
 import GHC.Generics (Generic)
@@ -53,8 +54,8 @@ instance ToJSON MusicCoverPayload
 ---------------------------------------------------------------------------------------------------
 type GetMusicList = Get '[JSON] MusicPayload
 
-getMusicList :: Int -> Word32 -> VB.GalleryMonad MusicPayload
-getMusicList  seed unsingedPage = do
+getMusicList :: Int -> Word32 -> Maybe String -> VB.GalleryMonad MusicPayload
+getMusicList  seed unsingedPage filter = do
     let page = VB.pageToInt unsingedPage
 
     VB.State { VB.galleries = p } <- ask
