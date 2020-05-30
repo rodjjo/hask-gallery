@@ -195,7 +195,18 @@ a:hover {
   mask: url(/pics/repeat.svg) no-repeat center;
 }
 
+.random-button {
+  left: calc(80vw);
+  top: calc(50vh + 22.5vh);
+  -webkit-mask: url(/pics/random.svg) no-repeat center;
+  mask: url(/pics/random.svg) no-repeat center;
+}
+
 .repeat-on {
+  background-color: rgba(125, 216, 88, 0.4);
+}
+
+.random-on {
   background-color: rgba(125, 216, 88, 0.4);
 }
 

@@ -47,7 +47,7 @@ import GHC.Generics (Generic)
 import Network.Mime (defaultMimeLookup)
 import Text.Read (Read)
 import Text.Show (Show)
-import Prelude (ceiling, fromInteger, toInteger, return, ($), (*), (-), (>=), (/))
+import Prelude (ceiling, fromInteger, toInteger, return, ($), (*), (-), (>=), (/), (/=))
 import Servant (OctetStream)
 import Servant.API.ContentTypes (AllCTRender(..))
 import Servant.Server.Internal.Handler (Handler(..))
@@ -120,7 +120,7 @@ lazyResponseWithMime filePath rawData =
 ---------------------------------------------------------------------------------------------------
 paginate ::  (ToJSON a) => [a] -> Int -> Int -> Int -> IO ([a], SimplePagination)
 paginate theList theSeed thePage thePageSize = do
-    let shuffledList = MB.shuffleModelList theList theSeed
+    let shuffledList = if theSeed /= 1 then MB.shuffleModelList theList theSeed else theList
     let maxPages = ceiling ((UT.toDouble (length shuffledList)) / (UT.toDouble  thePageSize))
     let finalPage = if thePage >= maxPages then maxPages - 1 else thePage
     let pageItems = take thePageSize $ drop (finalPage * thePageSize) shuffledList
