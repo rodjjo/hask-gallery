@@ -31,6 +31,7 @@ import Utils (
         ,quicksort
         ,quicksortM
         ,dropFirstSlash
+        ,pathContains
     )
 
 import Control.Monad (mapM)
@@ -74,8 +75,12 @@ filename = "gallery-videos.hgl"
 emptyGallery = VideoGallery ([] ::VideoList) "" 0 0
 
 ---------------------------------------------------------------------------------------------------
-getGalleryVideos :: VideoGallery -> VideoList
-getGalleryVideos (VideoGallery p1 _ _ _ ) = p1
+vidPath :: Video -> String
+vidPath (Video p _ _ _ _) = p
+
+---------------------------------------------------------------------------------------------------
+getGalleryVideos :: VideoGallery -> Maybe String -> VideoList
+getGalleryVideos (VideoGallery p _ _ _ ) filter = if filter == Nothing then p else [ i | i <- p, pathContains (fromJust filter) (vidPath i) ]
 
 ---------------------------------------------------------------------------------------------------
 getGalleryPath :: VideoGallery -> String

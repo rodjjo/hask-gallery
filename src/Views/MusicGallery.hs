@@ -33,7 +33,7 @@ import Servant (JSON)
 import Prelude (return, ($), (/=))
 import System.Directory (doesFileExist)
 import System.FilePath.Posix (takeDirectory, (</>))
-
+import System.IO (putStrLn)
 ---------------------------------------------------------------------------------------------------
 
 data MusicPayload = MusicPayload
@@ -63,7 +63,7 @@ getMusicList  seed unsingedPage filter = do
     let gallery = VB.getMusicGallery allgalleries
 
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
-    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MM.getGalleryMusics gallery) randomSeed page 100
+    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MM.getGalleryMusics gallery filter) randomSeed page 100
     return MusicPayload { items = shuffledList
                          , itemCount = MM.getGalleryCount gallery
                          , totalDuration = MM.getGalleryDuration gallery

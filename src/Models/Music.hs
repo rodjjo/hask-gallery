@@ -29,6 +29,7 @@ import Utils (
         ,quicksort
         ,quicksortM
         ,dropFirstSlash
+        ,pathContains
     )
 
 import Control.Monad (mapM)
@@ -38,6 +39,7 @@ import Data.List (drop)
 import Data.String (String)
 import Data.Eq (Eq)
 import Data.Int (Int)
+import Data.Maybe (fromJust, Maybe(Nothing))
 import Data.Ord (Ord)
 import GHC.Generics (Generic)
 import Prelude (length, return, ($), (==), otherwise)
@@ -69,12 +71,16 @@ filename = "gallery-musics.hgl"
 emptyGallery = MusicGallery ([] ::MusicList) "" 0 0
 
 ---------------------------------------------------------------------------------------------------
+songPath :: Music -> String
+songPath (Music p _ _ ) = p
+
+---------------------------------------------------------------------------------------------------
 loadList :: IO MusicGallery
 loadList = loadModel filename emptyGallery
 
 ---------------------------------------------------------------------------------------------------
-getGalleryMusics :: MusicGallery -> MusicList
-getGalleryMusics (MusicGallery m _ _ _) = m
+getGalleryMusics :: MusicGallery -> Maybe String  -> MusicList
+getGalleryMusics (MusicGallery m _ _ _) filter = if filter == Nothing then m else [ i | i <- m, pathContains (fromJust filter) (songPath i) ]
 
 ---------------------------------------------------------------------------------------------------
 getGalleryPath :: MusicGallery -> String

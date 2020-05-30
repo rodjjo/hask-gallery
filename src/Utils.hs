@@ -24,6 +24,7 @@ module Utils (
         ,relativePathFromList
         ,isPathUnSafe
         ,toDouble
+        ,pathContains
     ) where
 
 import Control.Monad (Monad)
@@ -35,6 +36,7 @@ import Data.String (String)
 import Data.Int (Int)
 import Data.Ord (Ord)
 import Data.List (filter, foldl, elem, map, take, tail, (++))
+import Data.List.Split (splitOn)
 import Data.Time.Clock (UTCTime(..), nominalDiffTimeToSeconds)
 import Data.Time.LocalTime (utcToLocalTime, getZonedTime, zonedTimeToUTC)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
@@ -217,3 +219,13 @@ isPathUnSafe filePath
 ---------------------------------------------------------------------------------------------------
 toDouble :: Int -> Double
 toDouble n1 = fromInteger $ toInteger n1
+
+
+---------------------------------------------------------------------------------------------------
+hasAllSubStrings :: [String] -> String -> Bool
+hasAllSubStrings [] _ = True
+hasAllSubStrings (x:xs) path = if substring x path then hasAllSubStrings xs path else False
+
+---------------------------------------------------------------------------------------------------
+pathContains :: String -> String -> Bool
+pathContains filter path = hasAllSubStrings (splitOn "%20" $ lowerPath filter) (lowerPath path)

@@ -51,7 +51,7 @@ getPictureList  seed unsingedPage filter = do
     let gallery = VB.getPictureGallery allgalleries
 
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
-    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MP.getGalleryPictures gallery) randomSeed page 100
+    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MP.getGalleryPictures gallery filter) randomSeed page 100
     return PicturePayload { items = shuffledList
                          , itemCount = MP.getGalleryCount gallery
                          , pagination = pagination
