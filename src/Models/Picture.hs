@@ -28,6 +28,7 @@ import Utils (
         ,quicksort
         ,quicksortM
         ,dropFirstSlash
+        ,pathContains
     )
 
 import Control.Monad (mapM)
@@ -36,6 +37,7 @@ import Data.Int (Int)
 import Data.List (drop)
 import Data.String (String)
 import Data.Eq (Eq)
+import Data.Maybe (fromJust, Maybe(Nothing))
 import Data.Ord (Ord)
 import GHC.Generics (Generic)
 import Prelude (length, return, ($), (==), otherwise)
@@ -65,12 +67,16 @@ filename = "gallery-pictures.hgl"
 emptyGallery = PictureGallery ([] ::PictureList) "" 0
 
 ---------------------------------------------------------------------------------------------------
+picPath :: Picture -> String
+picPath (Picture p _) = p
+
+---------------------------------------------------------------------------------------------------
 loadList :: IO PictureGallery
 loadList = loadModel filename emptyGallery
 
 ---------------------------------------------------------------------------------------------------
-getGalleryPictures :: PictureGallery -> PictureList
-getGalleryPictures (PictureGallery p _ _) = p
+getGalleryPictures :: PictureGallery -> Maybe String -> PictureList
+getGalleryPictures (PictureGallery p _ _) filter = if filter == Nothing then p else [ i | i <- p, pathContains (fromJust filter) (picPath i) ]
 
 ---------------------------------------------------------------------------------------------------
 getGalleryPath :: PictureGallery -> String

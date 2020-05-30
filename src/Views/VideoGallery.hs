@@ -23,6 +23,8 @@ import Data.Int (Int)
 import Data.Word (Word32)
 import Data.Eq (Eq)
 import Data.List (take, drop)
+import Data.Maybe
+import Data.String (String)
 import GHC.Generics (Generic)
 import Servant.API (Get)
 import Servant (JSON)
@@ -45,8 +47,8 @@ instance ToJSON VideosPayload
 ---------------------------------------------------------------------------------------------------
 type GetVideoList = Get '[JSON] VideosPayload
 
-getVideoList :: Int -> Word32 -> VB.GalleryMonad VideosPayload
-getVideoList seed unsingedPage = do
+getVideoList :: Int -> Word32 -> Maybe String -> VB.GalleryMonad VideosPayload
+getVideoList seed unsingedPage filter = do
     let page = VB.pageToInt unsingedPage
 
     VB.State { VB.galleries = p } <- ask
@@ -54,7 +56,7 @@ getVideoList seed unsingedPage = do
     let gallery = VB.getVideoGallery allgalleries
 
     randomSeed <- if seed /= 0 then return seed else liftIO $ UT.getRandomSeed
-    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MV.getGalleryVideos gallery) randomSeed page 100
+    ( shuffledList, pagination ) <- liftIO $ VB.paginate (MV.getGalleryVideos gallery filter) randomSeed page 100
     return VideosPayload { items = shuffledList
                          , itemCount = MV.getGalleryCount gallery
                          , totalDuration = MV.getGalleryDuration gallery
