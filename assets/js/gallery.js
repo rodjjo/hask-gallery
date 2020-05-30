@@ -2,6 +2,7 @@ function GalleryModule() {
     let currentVideoIdx = 0;
     let currentPictureIdx = 0;
     let currentMusicIdx = 0;
+    let randomizationToggling = false;
     let videos = [];
     let pictures = [];
     let musics = [];
@@ -45,7 +46,14 @@ function GalleryModule() {
 
     function hasAttr(element, name) {
         const attr = element.attr(name);
-        return (typeof attr !== typeof undefined && attr !== false);
+        if (typeof attr !== typeof undefined && attr !== false) {
+            return true;
+        }
+        if (name.startsWith('data-')) {
+            const data = element.data(name.substr(5));
+            return (typeof data !== typeof undefined && data !== false);
+        }
+        return false;
     }
 
     const streamIterationControls = [
@@ -54,6 +62,7 @@ function GalleryModule() {
         $("#id-pause-play"),
         $("#id-maximize"),
         $("#id-repeat"),
+        $("#id-random"),
     ]
 
     const pageControls = {
@@ -107,6 +116,7 @@ function GalleryModule() {
             if (getCurrentPage().repeatControl) {
                 getCurrentPage().repeatControl.removeClass('repeat-on');
             }
+            $("#id-random").removeClass('random-on');
         }
     }, 200);
 
@@ -161,8 +171,10 @@ function GalleryModule() {
             getFunction(currentSeed, page, function(data) {
                 if (data.pagination.page + 1 < data.pagination.pageCount)
                     dePaginate(data.pagination.randomSeed, data.pagination.page + 1, currentList.concat(data.items), resultCb);
-                else
-                    resultCb(currentList.concat(data.items))
+                else {
+                    randomizationToggling = false;
+                    resultCb(currentList.concat(data.items));
+                }
             });
         };
     }
@@ -208,18 +220,33 @@ function GalleryModule() {
         }
     }
 
+    function getPageControl() {
+        const page = pageControls[currentPage];
+        return currentPage === 'pictures' ? $("#id-picture") : page.streamingControl
+    }
+
     function changePicture(data) {
         const pictureComponent = $('#id-picture');
         pictureComponent.attr('src', pictureFilesURL(data.picturePath));
     }
 
-    function showRepeat()  {
+    function showRepeat() {
         const page = pageControls[currentPage];
         if (page.streamingControl && page.repeatControl) {
             page.repeatControl.removeClass('repeat-on');
             if (hasAttr(page.streamingControl, 'loop')) {
                 page.repeatControl.addClass('repeat-on');
             }
+        }
+    }
+
+    function showRandom() {
+        const page = pageControls[currentPage];
+        const control = getPageControl();
+        const randomControl = $("#id-random");
+        randomControl.removeClass('random-on');
+        if (hasAttr(control, 'data-random')) {
+            randomControl.addClass('random-on');
         }
     }
 
@@ -240,6 +267,7 @@ function GalleryModule() {
             pageControls[previousPage].streamControls.forEach((c) => {c.css('display', 'none')});
         pageControls[currentPage].streamControls.forEach((c) => {c.css('display', 'block')});
         showRepeat();
+        showRandom();
         saveSettings();
     }
 
@@ -255,16 +283,35 @@ function GalleryModule() {
         if (settings.musicRepeat) {
             $("#id-audio").attr('loop', "1");
         }
+        if (settings.videoRandom) {
+            $("#id-video").data('random', "1");
+        }
+        if (settings.musicRandom) {
+            $("#id-audio").data('random', "1");
+        }
+        if (settings.pictureRandom) {
+            $("#id-picture").data('random', "1");
+        }
         currentPage = settings.currentPage || "videos";
     }
 
     function saveSettings() {
         const settings = {
+            videoRandom: hasAttr($("#id-video"), 'data-random'),
             videoRepeat: hasAttr($("#id-video"), 'loop'),
             musicRepeat: hasAttr($("#id-audio"), 'loop'),
+            musicRandom: hasAttr($("#id-audio"), 'data-random'),
+            pictureRandom: hasAttr($("#id-picture"), 'data-random'),
             currentPage,
         }
         localStorage.setItem('hask-gallery', JSON.stringify(settings));
+    }
+
+    function getInitialSeed(control) {
+        if (hasAttr(control, 'data-random')) {
+            return 0;
+        }
+        return 1;
     }
 
     function displayControls(x, y, max_y) {
@@ -287,6 +334,7 @@ function GalleryModule() {
                 c.addClass("buttons-visible");
                 streamIterationVisibleTimeout = 2;
                 showRepeat();
+                showRandom();
             }
         });
 
@@ -299,6 +347,19 @@ function GalleryModule() {
 
     function getCurrentPage() {
         return pageControls[currentPage];
+    }
+
+    function reloadCurrentPageContents() {
+        if (currentPage === 'videos') {
+            currentVideoIdx = 0;
+            dePaginator(getVideos) (getInitialSeed($('#id-video')), 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
+        } else if (currentPage === 'pictures') {
+            currentPictureIdx = 0;
+            dePaginator(getPictures) (getInitialSeed($('#id-picture')), 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
+        } else {
+            currentMusicIdx = 0;
+            dePaginator(getMusics) (getInitialSeed($('#id-audio')), 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
+        }
     }
 
     function handleFrontButtonClicks(event) {
@@ -340,6 +401,24 @@ function GalleryModule() {
                         showRepeat();
                         saveSettings();
                     }
+                }
+            }
+            case "random": {
+                return function() {
+                    if (randomizationToggling) {
+                        return;
+                    }
+                    randomizationToggling = true;
+                    const page = pageControls[currentPage];
+                    const control = getPageControl();
+                    if (hasAttr(control, 'data-random')) {
+                        control.data('random', false);
+                    } else {
+                        control.data('random', '1');
+                    }
+                    showRandom();
+                    saveSettings();
+                    reloadCurrentPageContents();
                 }
             }
         }
@@ -435,14 +514,17 @@ function GalleryModule() {
         $("#id-previous").click(handleFrontButtonClicks("previous"));
         $("#id-maximize").click(handleFrontButtonClicks("maximize"));
         $("#id-repeat").click(handleFrontButtonClicks("repeat"));
+        $("#id-random").click(handleFrontButtonClicks("random"));
         $("#id-front-panel").mousemove(handleFrontPanelMouseMove);
     }) ();
 
-    dePaginator(getVideos) (0, 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
-    dePaginator(getPictures) (0, 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
-    dePaginator(getMusics) (0, 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
-
     loadSettings();
+
+    dePaginator(getVideos) (getInitialSeed($('#id-video')), 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
+    dePaginator(getPictures) (getInitialSeed($('#id-picture')), 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
+    dePaginator(getMusics) (getInitialSeed($('#id-audio')), 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
+
+
 
     showPage(currentPage);
 };
