@@ -49,7 +49,7 @@ body {
   width: 100vw;
   display: none;
   height: var(--top-panel-height);
-  z-index: 10000000;
+  z-index: 1000000;
 }
 
 .bottom-panel {
@@ -85,6 +85,28 @@ body {
   height: 100%;
   background-color:#000;
   color: white;
+}
+
+.filter-panel {
+  position: absolute;
+  width: 25vw;
+  height: 40px;
+  left: calc(50vw - 12.5vw);
+  top: 14vh;
+  background-color:#000;
+  color: white;
+  display: none;
+  z-index: 10000000;
+}
+
+.filter-editor {
+  width: 100%;
+  height: 100%;
+}
+
+.filter-button {
+  width: 95%;
+  height: 100%;
 }
 
 .video-page {
@@ -172,6 +194,13 @@ a:hover {
   left: calc(50vw - 7.5vw);
   -webkit-mask: url(/pics/play-circle.svg) no-repeat center;
   mask: url(/pics/play-circle.svg) no-repeat center;
+}
+
+.search-button {
+  left: calc(50vw - 7.5vw);
+  top: calc(12vh);
+  -webkit-mask: url(/pics/search.svg) no-repeat center;
+  mask: url(/pics/search.svg) no-repeat center;
 }
 
 .next-button {

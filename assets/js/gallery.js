@@ -2,7 +2,7 @@ function GalleryModule() {
     let currentVideoIdx = 0;
     let currentPictureIdx = 0;
     let currentMusicIdx = 0;
-    let randomizationToggling = false;
+    let updatingContent = false;
     let videos = [];
     let pictures = [];
     let musics = [];
@@ -63,6 +63,7 @@ function GalleryModule() {
         $("#id-maximize"),
         $("#id-repeat"),
         $("#id-random"),
+        $("#id-search"),
     ]
 
     const pageControls = {
@@ -77,6 +78,7 @@ function GalleryModule() {
             "previousFunction": previousVideo,
             "streamControls": streamIterationControls,
             "repeatControl": $("#id-repeat"),
+            "filter": "",
         },
         "music": {
             "controls": ["id-audio-page", "id-bottom-panel-music"],
@@ -89,6 +91,7 @@ function GalleryModule() {
             "previousFunction": previousMusic,
             "streamControls": streamIterationControls,
             "repeatControl": $("#id-repeat"),
+            "filter": "",
         },
         "pictures": {
             "controls": ["id-picture-page", "id-bottom-panel-picture"],
@@ -100,10 +103,9 @@ function GalleryModule() {
             "previousFunction": previousPicture,
             "bottomBarControl": "id-bottom-panel-picture",
             "streamControls": streamIterationControls.filter((c) => (c.attr('id') !== "id-repeat")),
+            "filter": "",
         }
     };
-
-
 
     let streamIterationVisibleTimeout = 2;
 
@@ -144,16 +146,25 @@ function GalleryModule() {
 
     function get(template) {
         return function() {
-            const args = Array.from(arguments).slice(0, -1);
+            const args = Array.from(arguments).slice(0, -2);
+            const filter = urlEncode(Array.from(arguments).slice(-2)[0]);
             const callback = Array.from(arguments).slice(-1)[0];
             const url = format.apply(template, args);
-            $.get(url, callback);
+            if (filter) {
+                $.get(`${url}?filter=${urlEncode(filter)}`, callback);
+            } else {
+                $.get(url, callback);
+            }
         }
+    }
+
+    function urlEncode(content) {
+        return encodeURI(content).replace(/#/g, '%23');
     }
 
     function composeURI(base) {
         return function(path) {
-            return `${base}${encodeURI(path).replace(/#/g, '%23')}`
+            return `${base}${urlEncode(path)}`
         }
     }
 
@@ -167,12 +178,13 @@ function GalleryModule() {
     const getCover = get('/covers{0}');
 
     function dePaginator(getFunction) {
-        return function dePaginate(currentSeed, page, currentList, resultCb) {
-            getFunction(currentSeed, page, function(data) {
+        return function dePaginate(currentSeed, page, filter, currentList, resultCb) {
+            getFunction(currentSeed, page, filter, function(data) {
                 if (data.pagination.page + 1 < data.pagination.pageCount)
-                    dePaginate(data.pagination.randomSeed, data.pagination.page + 1, currentList.concat(data.items), resultCb);
+                    dePaginate(data.pagination.randomSeed, data.pagination.page + 1, filter, currentList.concat(data.items), resultCb);
                 else {
-                    randomizationToggling = false;
+                    updatingContent = false;
+                    $("#id-filter-panel").css('display', 'none');
                     resultCb(currentList.concat(data.items));
                 }
             });
@@ -207,7 +219,7 @@ function GalleryModule() {
     function changeMusic(data) {
         const musicComponent = $('#id-audio');
         musicComponent.attr('src', musicFilesURL(data.musicPath));
-        getCover(data.musicPath, (data)=> {
+        getCover(data.musicPath, "", (data)=> {
             if (data.coverPath) {
                 $('#id-audio-cover').css('display', 'block');
                 $('#id-audio-cover').attr('src', data.coverPath);
@@ -266,6 +278,7 @@ function GalleryModule() {
         if (previousPage)
             pageControls[previousPage].streamControls.forEach((c) => {c.css('display', 'none')});
         pageControls[currentPage].streamControls.forEach((c) => {c.css('display', 'block')});
+        $("#id-filter-editor").val(pageControls[currentPage].filter);
         showRepeat();
         showRandom();
         saveSettings();
@@ -292,6 +305,11 @@ function GalleryModule() {
         if (settings.pictureRandom) {
             $("#id-picture").data('random', "1");
         }
+
+        pageControls["videos"].filter = settings.videosFilter || "";
+        pageControls["pictures"].filter = settings.picturesFilter || "";
+        pageControls["music"].filter = settings.musicsFilter || "";
+
         currentPage = settings.currentPage || "videos";
     }
 
@@ -302,6 +320,9 @@ function GalleryModule() {
             musicRepeat: hasAttr($("#id-audio"), 'loop'),
             musicRandom: hasAttr($("#id-audio"), 'data-random'),
             pictureRandom: hasAttr($("#id-picture"), 'data-random'),
+            videosFilter: pageControls["videos"].filter,
+            picturesFilter: pageControls["pictures"].filter,
+            musicsFilter: pageControls["music"].filter,
             currentPage,
         }
         localStorage.setItem('hask-gallery', JSON.stringify(settings));
@@ -349,16 +370,17 @@ function GalleryModule() {
         return pageControls[currentPage];
     }
 
-    function reloadCurrentPageContents() {
-        if (currentPage === 'videos') {
+    function reloadPageContents(thePage) {
+        const page = pageControls[thePage];
+        if (thePage === 'videos') {
             currentVideoIdx = 0;
-            dePaginator(getVideos) (getInitialSeed($('#id-video')), 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
-        } else if (currentPage === 'pictures') {
+            dePaginator(getVideos) (getInitialSeed($('#id-video')), 0, page.filter, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
+        } else if (thePage === 'pictures') {
             currentPictureIdx = 0;
-            dePaginator(getPictures) (getInitialSeed($('#id-picture')), 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
+            dePaginator(getPictures) (getInitialSeed($('#id-picture')), 0, page.filter, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
         } else {
             currentMusicIdx = 0;
-            dePaginator(getMusics) (getInitialSeed($('#id-audio')), 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
+            dePaginator(getMusics) (getInitialSeed($('#id-audio')), 0, page.filter, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
         }
     }
 
@@ -405,10 +427,10 @@ function GalleryModule() {
             }
             case "random": {
                 return function() {
-                    if (randomizationToggling) {
+                    if (updatingContent) {
                         return;
                     }
-                    randomizationToggling = true;
+                    updatingContent = true;
                     const page = pageControls[currentPage];
                     const control = getPageControl();
                     if (hasAttr(control, 'data-random')) {
@@ -418,7 +440,28 @@ function GalleryModule() {
                     }
                     showRandom();
                     saveSettings();
-                    reloadCurrentPageContents();
+                    reloadPageContents(currentPage);
+                }
+            }
+            case "search": {
+                return function() {
+                    if ($("#id-filter-panel").css('display') !== "block") {
+                        $("#id-filter-panel").css('display', 'block');
+                    } else {
+                        $("#id-filter-panel").css('display', 'none');
+                    }
+                }
+            }
+            case "apply-search": {
+                return function() {
+                    if (updatingContent) {
+                        return;
+                    }
+                    updatingContent = true;
+                    const page = pageControls[currentPage];
+                    page.filter = $("#id-filter-editor").val();
+                    saveSettings();
+                    reloadPageContents(currentPage);
                 }
             }
         }
@@ -515,16 +558,16 @@ function GalleryModule() {
         $("#id-maximize").click(handleFrontButtonClicks("maximize"));
         $("#id-repeat").click(handleFrontButtonClicks("repeat"));
         $("#id-random").click(handleFrontButtonClicks("random"));
+        $("#id-search").click(handleFrontButtonClicks("search"));
+        $("#id-filter-button").click(handleFrontButtonClicks("apply-search"));
         $("#id-front-panel").mousemove(handleFrontPanelMouseMove);
     }) ();
 
     loadSettings();
 
-    dePaginator(getVideos) (getInitialSeed($('#id-video')), 0, [], function(result) {videos=result; displayVideoAtCurrentIndex();});
-    dePaginator(getPictures) (getInitialSeed($('#id-picture')), 0, [], function(result) {pictures=result; displayPictureAtCurrentIndex();});
-    dePaginator(getMusics) (getInitialSeed($('#id-audio')), 0, [], function(result) {musics=result; displayMusicAtCurrentIndex();});
-
-
+    reloadPageContents("videos");
+    reloadPageContents("pictures");
+    reloadPageContents("music");
 
     showPage(currentPage);
 };
