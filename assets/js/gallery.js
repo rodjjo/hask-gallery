@@ -192,24 +192,25 @@ function GalleryModule() {
     }
 
     function updateVideoInfo(data) {
-        $('#content-info').text(data.videoPath);
+        $('#content-info').text(data ? data.videoPath : "No Content");
         $('#id-video-page-info').text(`${currentVideoIdx + 1} of ${videos.length} videos`);
         $('#id-video-seekbar')[0].time = 0;
     }
 
     function updateMusicInfo(data) {
-        $('#content-info-music').text(data.musicPath);
+        $('#content-info-music').text(data ? data.musicPath : "No Content");
         $('#id-audio-page-info').text(`${currentMusicIdx + 1} of ${musics.length} songs`);
         $('#id-audio-seekbar')[0].time = 0;
     }
+
     function updatePictureInfo(data) {
-        $("#id-path-picture").text(`${data.picturePath}`);
+        $("#id-path-picture").text(data ? data.picturePath : "No Content");
         $("#id-count-picture").text(`${currentPictureIdx + 1} of ${pictures.length} pictures`);
     }
 
     function changeVideo(data) {
         const videoComponent = $('#id-video');
-        videoComponent.attr('src', videoFilesURL(data.videoPath));
+        videoComponent.attr('src', data ? videoFilesURL(data.videoPath) : "");
         videoComponent[0].load();
         if (currentPage === 'videos') {
             videoComponent[0].play();
@@ -218,15 +219,19 @@ function GalleryModule() {
 
     function changeMusic(data) {
         const musicComponent = $('#id-audio');
-        musicComponent.attr('src', musicFilesURL(data.musicPath));
-        getCover(data.musicPath, "", (data)=> {
-            if (data.coverPath) {
-                $('#id-audio-cover').css('display', 'block');
-                $('#id-audio-cover').attr('src', data.coverPath);
-            } else {
-                $('#id-audio-cover').css('display', 'none');
-            }
-        });
+        musicComponent.attr('src', data ? musicFilesURL(data.musicPath) : "");
+        if (data) {
+            getCover(data.musicPath, "", (data)=> {
+                if (data.coverPath) {
+                    $('#id-audio-cover').css('display', 'block');
+                    $('#id-audio-cover').attr('src', data.coverPath);
+                } else {
+                    $('#id-audio-cover').css('display', 'none');
+                }
+            });
+        } else {
+            $('#id-audio-cover').css('display', 'none');
+        }
         if (currentPage === 'music' || currentPage == 'pictures') {
             musicComponent[0].play();
         }
@@ -239,7 +244,7 @@ function GalleryModule() {
 
     function changePicture(data) {
         const pictureComponent = $('#id-picture');
-        pictureComponent.attr('src', pictureFilesURL(data.picturePath));
+        pictureComponent.attr('src', data ? pictureFilesURL(data.picturePath) : "");
     }
 
     function showRepeat() {
@@ -470,6 +475,11 @@ function GalleryModule() {
     function displayVideoAtCurrentIndex() {
         if (currentVideoIdx >= videos.length)
             currentVideoIdx = 0;
+        if (videos.length === 0) {
+            updateVideoInfo(undefined);
+            changeVideo(undefined);
+            return;
+        }
         updateVideoInfo(videos[currentVideoIdx])
         changeVideo(videos[currentVideoIdx]);
     }
@@ -477,6 +487,11 @@ function GalleryModule() {
     function displayPictureAtCurrentIndex() {
         if (currentPictureIdx >= pictures.length)
             currentPictureIdx = 0;
+        if (pictures.length === 0) {
+            updatePictureInfo(undefined);
+            changePicture(undefined);
+            return;
+        }
         updatePictureInfo(pictures[currentPictureIdx])
         changePicture(pictures[currentPictureIdx]);
     }
@@ -484,6 +499,11 @@ function GalleryModule() {
     function displayMusicAtCurrentIndex() {
         if (currentMusicIdx >= musics.length)
             currentMusicIdx = 0;
+        if (musics.length === 0) {
+            updateMusicInfo(undefined);
+            changeMusic(undefined);
+            return;
+        }
         updateMusicInfo(musics[currentMusicIdx])
         changeMusic(musics[currentMusicIdx]);
     }
