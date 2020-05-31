@@ -2,7 +2,7 @@
 
 ## Attention
 
-Status: **Work In Progress**
+Status: **The master branch has an usable version**
 
 **This project has a simple gallery for songs, pictures and videos (.mp4). It has few features but it will have more features soon.**
 
