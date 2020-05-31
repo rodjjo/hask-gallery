@@ -6,7 +6,7 @@ Status: **The master branch has an usable version**
 
 **This project has a simple gallery for songs, pictures and videos (.mp4). It has few features but it will have more features soon.**
 
-Optionaly you can download put ffprobe binary together with hask-gallery-exe.
+Optionaly you can download ffprobe and put the binary together with hask-gallery-exe.
 If you do it will use it to retrive informations about the video files.
 You can Also put ffproble location at your PATH environment variable.
 
